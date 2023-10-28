@@ -4,7 +4,8 @@ We want to deepen our understanding of programming languages' functioning. To ac
 ## Documentation
 -GENERAL     
   https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/    
--LEXER     
+-LEXER 
+https://accu.org/journals/overload/26/145/balaam_2510/
 -PARSER     
 -COMPILER    
    
