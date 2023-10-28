@@ -16,6 +16,12 @@
     ["op", "+"],
     ["num", "1"]
 
+    ["id", "c"],
+    ["op", "="],
+    ["id", "c"],
+    ["op", "*"],
+    ["num", "5"],
+
     ["id", "print"],
     ["op", ":"],
     ["id", "c"]
@@ -44,20 +50,46 @@ var = {
             "value": {
                 "type": "binary-operation",
                 "expression": "+",
-                "values": [
-                    {
-                        "type": "variable-value",
-                        "name": 0
-                    },
-                    {
+                "a": {
+                    "type": "variable-value",
+                    "name": 0
+                },
+                "b": {
+                    "type": "binary-operation",
+                    "expression": "+",
+                    "a": {
                         "type": "variable-value",
                         "name": 1
                     },
-                    {
+                    "b": {
                         "type": "literal-value",
                         "value": 1
                     }
-                ]
+                }
+            }
+        },
+        {
+            "type": "variable-affectation",
+            "name": 2,
+            "value": {
+                "type": "binary-operation",
+                "expression": "+",
+                "a": {
+                    "type": "literal-value",
+                    "value": 5
+                },
+                "b": {
+                    "type": "binary-operation",
+                    "expression": "*",
+                    "a": {
+                        "type": "variable-value",
+                        "name": 2
+                    },
+                    "b": {
+                        "type": "literal-value",
+                        "value": 5
+                    }
+                }
             }
         },
         {
@@ -72,6 +104,11 @@ var = {
         }
     ]
 }
+
+"""
+
+"""
+
 
 
 def parser(tokens):

@@ -21,6 +21,7 @@ Le **lexer** est un programme qui va segmenter le fichier texte, et trier ce qu'
    
 ### Etape 2 : **Parser** _(Analyseur syntaxique)_
 Le **parser** est un autre programme qui lui va prendre le resultat du **lexer** et structurer et verifier les instructions.
-   
-### Etape 3 : **Action Tree** _()_
-...
+
+
+### Etape 3 : **Transpiler**
+Le Transpiler utilise le json generer par le parser et se charge de le traduire en un langage de programmation qui sera lui meme transpiler a son tours jusqu'a etre compile en code machine.
