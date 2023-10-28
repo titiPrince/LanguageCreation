@@ -4,9 +4,13 @@
     ["op", "="],
     ["num", "5"],
 
+    ["eol", 0],
+
     ["id", "b"],
     ["op", "="],
     ["num", "10"],
+
+    ["eol", 0],
 
     ["id", "c"],
     ["op", "="],
@@ -14,7 +18,9 @@
     ["op", "+"],
     ["id", "b"],
     ["op", "+"],
-    ["num", "1"]
+    ["num", "1"],
+
+    ["eol", 0],
 
     ["id", "c"],
     ["op", "="],
@@ -22,9 +28,13 @@
     ["op", "*"],
     ["num", "5"],
 
+    ["eol", 0],
+
     ["id", "print"],
     ["op", ":"],
-    ["id", "c"]
+    ["id", "c"],
+
+    ["eol", 0]
 ]
 
 
@@ -106,11 +116,19 @@ var = {
 }
 
 """
+#include <stdio.h>
 
+int main()
+{
+    int a = 5;
+    int b = 10;
+    int c = a + b + 1;
+    c = 5 + c * 5;
+    printf("%i",c);
+}
 """
-
 
 
 def parser(tokens):
     for token in tokens:
-        pass
+        type = token[0]

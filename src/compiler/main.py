@@ -1,4 +1,4 @@
-from laxer import laxer
+from lexer import laxer
 from parser import parser
 
 SOURCE_FILE = "code"
@@ -29,7 +29,7 @@ SOURCE_FILE = "code"
 
 
 def main():
-    tokens = laxer(SOURCE_FILE)
+    tokens = lexer(SOURCE_FILE)
     ast = parser(tokens)
 
     print(ast)

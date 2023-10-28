@@ -11,7 +11,7 @@ def scan(start, line, regex):
     return [line[start:len(line)], len(line) - start - 1]
 
 
-def laxer(source_file):
+def lexer(source_file):
     tokens = []
 
     file = open(source_file, "r")
@@ -44,5 +44,7 @@ def laxer(source_file):
 
             else:
                 raise Exception("Character not allowed")
+
+        tokens.append(("eol", ";"))
 
     print(tokens)
