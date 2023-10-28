@@ -4,7 +4,7 @@ Le Francais et l'Anglais bien que partageant le meme alphabet vont etre interpre
 
 ## Les differentes etapes
 
-### Prerequis: Un fichier texte
+### Prerequis : Un fichier texte
 Pour fonctionner notre langage auras besoin d'un fichier texte (tous les langages de programmation ne font que lire des fichiers texte selon leur propre regles).   
 
 Un exemple simple :
@@ -13,7 +13,14 @@ print: 42 * var + 1
 ``` 
 
 
-### Etape 1: Lexer
-Le lexer est un programme qui va segmenter le fichier texte, et trier ce qu'il si trouve dans une liste clef valeurs.
+### Etape 1 : **Lexer** _(Analyseur lexical)_
+Le **lexer** est un programme qui va segmenter le fichier texte, et trier ce qu'il si trouve dans une liste clef valeurs.
 
 ![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/e279a354-00e2-486e-896b-27b88e364063)
+
+   
+### Etape 2 : **Parser** _(Analyseur syntaxique)_
+Le **parser** est un autre programme qui lui va prendre le resultat du **lexer** et structurer et verifier les instructions.
+   
+### Etape 3 : **Action Tree** _()_
+...
