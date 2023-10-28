@@ -7,13 +7,13 @@ Le Francais et l'Anglais bien que partageant le meme alphabet vont etre interpre
 ### Prerequis: Un fichier texte
 Pour fonctionner notre langage auras besoin d'un fichier texte (tous les langages de programmation ne font que lire des fichiers texte selon leur propre regles).   
 
-![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/80e6d840-8f30-48a6-9077-4f78e2d1540d)   
-
+Un exemple simple :
+```
+print: 42 * var + 1
+``` 
 
 
 ### Etape 1: Lexer
-Decouper, trier, token, stocker
 Le lexer est un programme qui va segmenter le fichier texte, et trier ce qu'il si trouve dans une liste clef valeurs.
 
-![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/89449792-49d1-4c1b-b79c-eb5fb1bb32c3)
-![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/79c3a768-f3e9-4662-85ac-c7e633773860)
+![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/e279a354-00e2-486e-896b-27b88e364063)
