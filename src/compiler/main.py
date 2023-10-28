@@ -1,4 +1,4 @@
-from lexer import laxer
+from lexer import lexer
 from parser import parser
 
 SOURCE_FILE = "code"
