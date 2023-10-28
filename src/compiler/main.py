@@ -32,6 +32,8 @@ def main():
     tokens = laxer(SOURCE_FILE)
     ast = parser(tokens)
 
+    print(ast)
+
 
 if __name__ == '__main__':
     main()

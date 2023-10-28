@@ -1,4 +1,4 @@
-af ff= 5;
-bfd =10;
-c=ab +b + 1 - fgf;
+a = 5;
+b = 10;
+c = a + b + 1;
 print: c;
