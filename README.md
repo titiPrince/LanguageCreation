@@ -5,7 +5,8 @@ We want to deepen our understanding of programming languages' functioning. To ac
 -GENERAL     
   https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/    
 -LEXER 
-https://accu.org/journals/overload/26/145/balaam_2510/
+https://accu.org/journals/overload/26/145/balaam_2510/   
+https://stlab.cc/legacy/how-to-write-a-simple-lexical-analyzer-or-parser.html   
 -PARSER     
 -COMPILER    
    
