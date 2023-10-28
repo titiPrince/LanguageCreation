@@ -8,7 +8,9 @@ We want to deepen our understanding of programming languages' functioning. To ac
 https://accu.org/journals/overload/26/145/balaam_2510/   
 https://stlab.cc/legacy/how-to-write-a-simple-lexical-analyzer-or-parser.html   
 https://craftinginterpreters.com/scanning.html    
+
 -PARSER   
+https://supunsetunga.medium.com/writing-a-parser-getting-started-44ba70bb6cc9   
 https://fr.wikipedia.org/wiki/Forme_de_Backus-Naur   
 -COMPILER    
    
