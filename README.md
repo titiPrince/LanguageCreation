@@ -7,6 +7,7 @@ We want to deepen our understanding of programming languages' functioning. To ac
 -LEXER    
 https://accu.org/journals/overload/26/145/balaam_2510/   
 https://stlab.cc/legacy/how-to-write-a-simple-lexical-analyzer-or-parser.html   
+https://craftinginterpreters.com/scanning.html    
 -PARSER     
 -COMPILER    
    
