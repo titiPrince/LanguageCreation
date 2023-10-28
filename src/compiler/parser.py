@@ -128,7 +128,42 @@ int main()
 }
 """
 
+"""
+Errors
+
+'<id><id>' : Unexcepted <id>
+'<num><num>' : Unexcepted <num>
+'<op><op>' : Unexcepted <op>
+'<op.=>*<op.=>' : Unexcepted <op>
+'<eol><eol>' : Unexcepted <eol>
+'<op><eol>' : Incomplete expression
+'*<id.native>' : Unexcepted
+"""
+
+NATIVES = [
+    "print"
+]
+
 
 def parser(tokens):
+    vars = {}
+
     for token in tokens:
-        type = token[0]
+        name = token[0]
+        value = token[1]
+
+        # Declaration simple
+        if name == "id":
+            pass
+
+        elif name == "op":
+            pass
+
+        elif name == "num":
+            pass
+
+        elif name == "eol":
+            pass
+
+        else:
+            print("wtf whats happening: invalid token")
