@@ -1,46 +1,20 @@
-import re
-
-SOURCE_FILE = "code"
-
-"""
-[
-    ["id", "a"],
-    ["op", "="],
-    ["num", "5"],
-
-    ["id", "b"],
-    ["op", "="],
-    ["num", "10"],
-
-    ["id", "c"],
-    ["op", "="],
-    ["id", "a"],
-    ["op", "+"],
-    ["id", "b"],
-    ["op", "+"],
-    ["num", "1"]
-
-    ["id", "print"],
-    ["op", ":"],
-    ["id", "c"]
-]
-"""
+from re import match
 
 
 def scan(start, line, regex):
     for i in range(start, len(line)):
         char = line[i]
 
-        if not re.match(regex, char):
+        if not match(regex, char):
             return [line[start:i], i - start - 1]
 
     return [line[start:len(line)], len(line) - start - 1]
 
 
-def main():
+def laxer(source_file):
     tokens = []
 
-    file = open(SOURCE_FILE, "r")
+    file = open(source_file, "r")
     source = file.read()
     file.close()
 
@@ -60,11 +34,11 @@ def main():
             elif c in "+-/*:=":
                 tokens.append(("op", c))
 
-            elif re.match("[_a-zA-Z]", c):
+            elif match("[_a-zA-Z]", c):
                 word, skip = scan(i, line, "[_a-zA-Z]")
                 tokens.append(("id", word))
 
-            elif re.match("[.0-9]", c):
+            elif match("[.0-9]", c):
                 word, skip = scan(i, line, "[.0-9]")
                 tokens.append(("num", word))
 
@@ -72,7 +46,3 @@ def main():
                 raise Exception("Character not allowed")
 
     print(tokens)
-
-
-if __name__ == '__main__':
-    main()
