@@ -47,4 +47,4 @@ def lexer(source_file):
 
         tokens.append(("eol", ";"))
 
-    print(tokens)
+    return(tokens)

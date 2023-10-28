@@ -146,24 +146,63 @@ NATIVES = [
 
 
 def parser(tokens):
-    vars = {}
+    vartab = {}
+    print(tokens)
+    lines = []
+    line = []
+    for i in range(len(tokens)-1):
+        if tokens[i][0] != "eol":
+            line.append((tokens[i][0], tokens[i][1]))
+        else:
+            line.append((tokens[i][0], tokens[i][1]))
+            lines.append(line)
+            line = []
+    print(lines)
+    for i in range(len(lines)):
 
-    for token in tokens:
-        name = token[0]
-        value = token[1]
+        line = lines[i]
+        # print(line)
 
-        # Declaration simple
-        if name == "id":
-            pass
+        # print(line[1][0],line[1][1])
+        # print(line[2][0],line[2][1])
+            # print(j,len(line))
+        if ( 1<len(line) and
+             2 <len(line) and
+             3 <len(line) and
+             line[0][0] == "id" and
+             line[0][0] not in NATIVES and
+             line[1][1] == "=" and
+             line[2][0] == "num" and
+             line[3][1] == ";" ):
+            vartab[line[0][0]] = line[3][1]
 
-        elif name == "op":
-            pass
+            print("une expression simple ligne "+ str(i+1) )
+            print("variable " +  line[0][1]+" initialisée")
+            print("####################")
 
-        elif name == "num":
-            pass
-
-        elif name == "eol":
-            pass
 
         else:
-            print("wtf whats happening: invalid token")
+            print("ligne "+ str(i+1)+ "non valide")
+            print("####################")
+            # except IndexError:
+            #     print("out of range")
+
+            # Declaration simple
+
+
+
+
+            # if name == "id":
+            #     pass
+            #
+            # elif name == "op":
+            #     pass
+            #
+            # elif name == "num":
+            #     pass
+            #
+            # elif name == "eol":
+            #     pass
+            #
+            # else:
+            #     print("wtf whats happening: invalid token")
