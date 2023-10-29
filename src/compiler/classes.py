@@ -140,7 +140,7 @@ class AbstractSyntaxTree:
 
 t = VarDeclaration("a", LiteralNumber(5))
 
-print(t.toString(0))
+# print(t.toString(0))
 #
 # f = BinaryOperation("-", LiteralNumber(1), LiteralNumber(1))
 # h = BinaryOperation("+", f, LiteralNumber(9))
