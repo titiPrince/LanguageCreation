@@ -172,12 +172,46 @@ def parser(tokens):
              line[0][0] == "id" and
              line[0][0] not in NATIVES and
              line[1][1] == "=" and
-             line[2][0] == "num" and
-             line[3][1] == ";" ):
+             # line[2][1] in vartab a fix , ne check pas bien
+             (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in vartab)) and
+             line[3][1] == ";"):
             vartab[line[0][0]] = line[3][1]
 
-            print("une expression simple ligne "+ str(i+1) )
+            print("une déclaration simple ligne "+ str(i+1) )
             print("variable " +  line[0][1]+" initialisée")
+            print("####################")
+
+        elif ( 1<len(line) and
+             2 <len(line) and
+             3 <len(line) and
+             line[0][0] == "id" and
+             line[0][0] not in NATIVES and
+             line[1][1] == "=" and
+             (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in vartab)) and
+             line[3][1] != ";"):
+
+            start = 3
+            next = 4
+            last = 5
+
+            # j'en suis la (verif si les deux prochains charac
+            # sont operateur et nombre ou varibale deja déclarer
+            # et si le 3eme est une fin de ligne , si non false,
+            # si oui 2 charac mais pas fin de ligne continuer sinon finish)
+
+            # while(start<len(line) and next < len(line) and last <len(line)):
+            #     if(line[start][0] in "/*-+" and (line[next][0]== "num" or (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in NATIVES) )):
+            #         start+=1
+            #         next+=1
+            #         last +=1
+            #
+            #     else:
+            #         continue
+
+            vartab[line[0][0]] = line[3][1]
+
+            print("une declaration simple ligne "+ str(i+1) )
+            print("variable " + line[0][1] + " initialisée")
             print("####################")
 
 
