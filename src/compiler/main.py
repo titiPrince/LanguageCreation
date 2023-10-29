@@ -1,5 +1,6 @@
 from lexer import lexer
-from parser import parser
+from parserErrorHandler import parser
+from transpiler import transpile
 
 SOURCE_FILE = "v1"
 
@@ -30,8 +31,17 @@ SOURCE_FILE = "v1"
 
 def main():
     tokens = lexer(SOURCE_FILE)
-    ast = parser(tokens)
+    errors = parser(tokens)
+    print(errors)
 
+    if not errors:
+        transpile(tokens)
+
+    # si des erreur son presentes dans le code
+
+    else:
+
+        pass
 
 if __name__ == '__main__':
     main()

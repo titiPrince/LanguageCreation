@@ -266,10 +266,10 @@ def parser(lines):
         if res != True:
             res = "Line " + str(i + 1) + ": " + res
             errors.append(res)
-            print(res)
+            # print(res)
 
         else:
-            print(res)
+            pass
 
     return errors
     # if not errors:
