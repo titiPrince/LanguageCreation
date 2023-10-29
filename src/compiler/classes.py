@@ -22,7 +22,7 @@ class Instruction(ABC):
         indentation = " " * (4 * offset)
         inner = "    "
         newline = "\n" + indentation
-        output = "{" + newline
+        output = "{" + newline + inner + f'"type": {self.__class__.__name__}' + newline
 
         for key, value in self.__dict__.items():
             svalue = value
@@ -138,17 +138,17 @@ class AbstractSyntaxTree:
         return output + "}"
 
 
-a = BinaryOperation("-", LiteralNumber(5), LiteralNumber(1))
-b = BinaryOperation("+", a, LiteralNumber(9))
-t = VarDeclaration("a", b)
+t = VarDeclaration("a", LiteralNumber(5))
 
-f = BinaryOperation("-", LiteralNumber(1), LiteralNumber(1))
-h = BinaryOperation("+", f, LiteralNumber(9))
-
-q = FunctionPrint(h)
-
-g = AbstractSyntaxTree(t, q)
-# print(g.transpile())
+print(t.toString(0))
+#
+# f = BinaryOperation("-", LiteralNumber(1), LiteralNumber(1))
+# h = BinaryOperation("+", f, LiteralNumber(9))
+#
+# q = FunctionPrint(h)
+#
+# g = AbstractSyntaxTree(t, q)
+# # print(g.transpile())
 
 """
 #include <stdio.h>

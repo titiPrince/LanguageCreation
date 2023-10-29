@@ -151,6 +151,18 @@ Errors
 '<num><id>'
 """
 
+
+class Symbol:
+    ASSIGN = "="
+    EQUAL = "=="
+    CALL = ":"
+    EOL = ";"
+    MUL = "*"
+    ADD = "+"
+    SUB = "-"
+    DIV = "/"
+
+
 NATIVES = [
     "print"
 ]
@@ -158,6 +170,7 @@ NATIVES = [
 vartab = {}
 varId = 0
 equalCount = 0
+
 
 def isVarNameAvailable(element, vartab):
     return element.value in vartab.keys()
@@ -171,7 +184,8 @@ def scan(start, line):
     global varId
     global equalCount
 
-
+    isNotBegin = bool(start)
+    isBegin = not bool(start)
     # print(start)
     # print(len(line))
     if start != len(line) - 1:
@@ -183,46 +197,48 @@ def scan(start, line):
         # print(currentEl)
         # print(isIdNative(currentEl))
         # check si pas 2 "="
-        if currentEl.value == "=" :
+        if currentEl.value == Symbol.ASSIGN:
             equalCount += 1
-        if equalCount == 2: return "Error Syntax deux signes '="
 
-
+        if equalCount == 2:
+            return "Error Syntax deux signes '="
 
         # en pimiere position NUM et OP interdit
         if (currentEl.type == TokenType.NUM or currentEl.type == TokenType.OP) and isBegin:
             return "Error Syntax: not a variable nor a native function"
         #  si la fonction native n'est pas en premiere place
-        elif ((currentEl.type == TokenType.ID and isIdNative(currentEl) and start != 0) or
-              (nextEl.type == TokenType.ID and isIdNative(nextEl) and start != 0)):
+        elif ((currentEl.type == TokenType.ID and isIdNative(currentEl) and isNotBegin) or
+              (nextEl.type == TokenType.ID and isIdNative(nextEl) and isNotBegin)):
             return "Error Syntax: A native function must be in 1st position"
-        #  si la fonction native est en première place elle DOIT etre suivi de :
-        elif (currentEl.type == TokenType.ID and isIdNative(currentEl) and not nextEl.value ==":"):
 
+        #  si la fonction native est en première place elle DOIT etre suivi de :
+        elif currentEl.type == TokenType.ID and isIdNative(currentEl) and not nextEl.value == Symbol.CALL:
             return "Error Syntax: A native function must be follow by ':'"
 
         # si la varible n'existe pas dans vartab et n'est pas en 1ere position
-        elif currentEl.type == TokenType.ID and isIdNative(currentEl) == False and isVarNameAvailable(currentEl ,vartab)== False and start!= 0:
+        elif currentEl.type == TokenType.ID and not isIdNative(currentEl) and not isVarNameAvailable(currentEl,
+                                                                                                     vartab) and isNotBegin:
 
-            return "Error Syntax: la varible '" + currentEl.value+"' n'est pas defini"
+            return "Error Syntax: la varible '" + currentEl.value + "' n'est pas defini"
 
         # si la variable est en position 1 elle doit etre suivi d'un "=" (asignation ou delcaration)
-        elif currentEl.type == TokenType.ID and not isIdNative(currentEl) and  nextEl.value != "=" and start ==0:
+        elif currentEl.type == TokenType.ID and not isIdNative(currentEl) and nextEl.value != "=" and isBegin:
             return "Error Syntax: la varible '" + currentEl.value + "' n'est pas suivi d'un '='"
 
-
         # si la variable n'est PAS en position 1 elle DOIT etre suivi d' OP(not : ) ou  EOL)
-        elif  not nextEl.value == ":" and currentEl.type == TokenType.ID  and not (nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL ) and start != 0:
+        elif not nextEl.value == Symbol.CALL and currentEl.type == TokenType.ID and not (
+                nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL) and isNotBegin:
             return "Error Syntax: la varible '" + currentEl.value + "' est suivi d'un caractère incorect"
 
-
         # si le token est un un nombre , il DOIT etre suivis d' OP(not : et =) ou de EOL
-        elif start == 0 and not nextEl.value == "=" and not nextEl.value == ":" and currentEl.type == TokenType.NUM and not (nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL ):
+        elif isBegin and not nextEl.value == Symbol.ASSIGN and not nextEl.value == Symbol.CALL and currentEl.type == TokenType.NUM and not (
+                nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL):
             return "Error Syntax: le nombre '" + currentEl.value + "' est suivi d'un caractère incorect"
 
         #   si la variable est un operateur elle DOIT etre suvis d'une variable ou d'un nombre
-        elif currentEl.type == TokenType.OP and not (nextEl.type == TokenType.ID or nextEl.type == TokenType.NUM ):
-            return ("Error Syntax: l'operateur '" + currentEl.value + "' est suivi d'un caractère incorect")
+        elif currentEl.type == TokenType.OP and not (nextEl.type == TokenType.ID or nextEl.type == TokenType.NUM):
+            return "Error Syntax: l'operateur '" + currentEl.value + "' est suivi d'un caractère incorect"
+
         else:
             start += 1
             return scan(start, line)
@@ -230,26 +246,28 @@ def scan(start, line):
         # si ligne ok
 
         # si declaration / on stocke dans vartab
-        if isVarNameAvailable(line[0],vartab) == False and  isIdNative(line[0]) == False :
-
-            varId+=1
+        if isVarNameAvailable(line[0], vartab) == False and isIdNative(line[0]) == False:
+            varId += 1
             vartab[line[0].value] = varId
-
-
 
     return True
 
 
 def parser(lines):
     global equalCount
-    errortab = []
+
+    errors = []
+
     for i in range(len(lines)):
         line = lines[i]
         equalCount = 0
         res = scan(0, line)
-        if(res != True):
-            errortab.append(res)
-            print("Line "+ str(i+1) +": "+res)
+
+        if res != True:
+            res = "Line " + str(i + 1) + ": " + res
+            errors.append(res)
+            print(res)
+
         else:
             print(res)
 
