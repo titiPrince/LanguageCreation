@@ -49,12 +49,18 @@ var = {
         {
             "type": "variable-declaration",
             "name": 0,
-            "value": 5
+            "value": {
+                "type": "literal-value",
+                "value": 5
+            }
         },
         {
             "type": "variable-declaration",
             "name": 1,
-            "value": 10
+            "value": {
+                "type": "literal-value",
+                "value": 10
+            }
         },
         {
             "type": "variable-declaration",
@@ -220,8 +226,8 @@ def scan(start, line):
     else:
         # si ligne ok
 
-        # si declaration
-        if isVarNameAvailable(line[0],vartab) == False and  isIdNative(line[0]) == False):
+        # si declaration / on stocke dans vartab
+        if isVarNameAvailable(line[0],vartab) == False and  isIdNative(line[0]) == False :
 
             varId+=1
             vartab[line[0].value] = varId
