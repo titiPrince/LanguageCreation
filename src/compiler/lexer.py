@@ -1,4 +1,5 @@
 from re import match
+from classes import Token, TokenType
 
 
 def scan(start, line, regex):
@@ -18,10 +19,9 @@ def lexer(source_file):
     source = file.read()
     file.close()
 
-    lines = source.split(";")
+    lines = source.split(";")[0:-1]
 
     for line in lines:
-        instruction = ()
         skip = 0
 
         for i, c in enumerate(line):
@@ -32,15 +32,15 @@ def lexer(source_file):
                 continue
 
             elif c in "+-/*:=":
-                tokens.append(("op", c))
+                tokens.append(Token(TokenType.OP, c))
 
             elif match("[_a-zA-Z]", c):
                 word, skip = scan(i, line, "[_a-zA-Z]")
-                tokens.append(("id", word))
+                tokens.append(Token(TokenType.ID, word))
 
             elif match("[.0-9]", c):
                 word, skip = scan(i, line, "[.0-9]")
-                tokens.append(("num", word))
+                tokens.append(Token(TokenType.NUM, word))
 
             else:
                 raise Exception("Character not allowed")

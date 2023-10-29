@@ -1,3 +1,5 @@
+from classes import TokenType
+
 """
 [
     ["id", "a"],
@@ -212,20 +214,17 @@ def parser(lines):
         res = scan(0, line)
         print(res)
 
-
-
-
-            # if name == "id":
-            #     pass
-            #
-            # elif name == "op":
-            #     pass
-            #
-            # elif name == "num":
-            #     pass
-            #
-            # elif name == "eol":
-            #     pass
-            #
-            # else:
-            #     print("wtf whats happening: invalid token")
+        # if name == "id":
+        #     pass
+        #
+        # elif name == "op":
+        #     pass
+        #
+        # elif name == "num":
+        #     pass
+        #
+        # elif name == "eol":
+        #     pass
+        #
+        # else:
+        #     print("wtf whats happening: invalid token")
