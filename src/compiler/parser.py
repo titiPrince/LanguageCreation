@@ -189,14 +189,9 @@ def scan(start, line):
 
 
 
-        # si deux element identiques a la suite
-        # if (currentEl.type == nextEl.type):
-        #     return "Error Syntax: '" + currentEl.type + "' a coté d'un autre '"+ currentEl.type+"'"
-
-        # si op suivi de eol
-        # elif currentEl.type == TokenType.OP and nextEl.type == TokenType.EOL:
-        #     return "Error Syntax: '" + currentEl.type+"' could not be in last position"
-
+        # en pimiere position NUM et OP interdit
+        if (currentEl.type == TokenType.NUM or currentEl.type == TokenType.OP) and isBegin:
+            return "Error Syntax: not a variable nor a native function"
         #  si la fonction native n'est pas en premiere place
         elif ((currentEl.type == TokenType.ID and isIdNative(currentEl) and start != 0) or
               (nextEl.type == TokenType.ID and isIdNative(nextEl) and start != 0)):
@@ -256,5 +251,15 @@ def parser(lines):
             errortab.append(res)
             print("Line "+ str(i+1) +": "+res)
         else:
-            print("Line " + str(i+1) + ": True ")
+            print(res)
 
+    return errors
+    # if not errors:
+    #
+    #
+    #     print (lines)
+    #     pass
+    #
+    #
+    # else:
+    #     print(errors)

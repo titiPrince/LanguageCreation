@@ -1,7 +1,7 @@
 from lexer import lexer
 from parser import parser
 
-SOURCE_FILE = "code"
+SOURCE_FILE = "v1"
 
 """
 [
