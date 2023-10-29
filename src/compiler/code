@@ -2,6 +2,10 @@ a = 5 ;
 b = 100;
 c = a + b + 6;
 c = 5 + c * 5 ;
-erreur1 = t r + 4  ;
-erreur2 = 44 4 + 5;
+erreur2 = b + 4  ;
+2erreur = 44 4 + 5;
 print: c;
+
+5 = 2+1;
+truc = 5 5+1;
+truc:5;

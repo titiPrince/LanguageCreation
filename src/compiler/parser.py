@@ -140,7 +140,9 @@ Errors
 '<eol><eol>' : Unexcepted <eol> fait
 '<op><eol>' : Incomplete expression fait
 '*<id.native>' : Unexcepted fait 
-'id.name.not-exist'
+'id.name.not-exist' fait 
+'<id><num>'
+'<num><id>'
 """
 
 NATIVES = [
@@ -149,7 +151,7 @@ NATIVES = [
 
 vartab = {}
 varId = 0
-
+equalCount = 0
 
 def isVarNameAvailable(element, vartab):
     return element.value in vartab.keys()
@@ -161,31 +163,57 @@ def isIdNative(element):
 
 def scan(start, line):
     global varId
+    global equalCount
 
-    equalsCount = 0
+
     # print(start)
     # print(len(line))
     if start != len(line) - 1:
         currentEl = line[start]
         nextEl = line[start + 1]
         # print(currentEl)
-        # print(currentEl[0], nextEl[0])
-        # print()
+
+        # check si pas 2 "="
+        if currentEl.value == "=" :
+            equalCount += 1
+        if equalCount == 2: return "Error Syntax deux signes '="
+
 
         # si deux element identiques a la suite
-        if (currentEl.type == nextEl.type):
-            return False
+        # if (currentEl.type == nextEl.type):
+        #     return "Error Syntax: '" + currentEl.type + "' a coté d'un autre '"+ currentEl.type+"'"
 
         # si op suivi de eol
-        elif currentEl.type == TokenType.OP and nextEl.type == TokenType.EOL:
-            return False
+        # elif currentEl.type == TokenType.OP and nextEl.type == TokenType.EOL:
+        #     return "Error Syntax: '" + currentEl.type+"' could not be in last position"
+
         #  si la fonction native n'est pas en premiere place
         elif ((currentEl.type == TokenType.ID and isIdNative(currentEl) and start != 0) or
               (nextEl.type == TokenType.ID and isIdNative(nextEl) and start != 0)):
-            return False
-        # si la varible n'existe pas
+            return "Error Syntax: a native function must be in 1st position"
+
+        # si la varible n'existe pas dans vartab et n'est pas en 1ere position
         elif currentEl.type == TokenType.ID and isIdNative(currentEl) == False and isVarNameAvailable(currentEl ,vartab)== False and start!= 0:
-            return False
+
+            return "Error Syntax: la varible '" + currentEl.value+"' n'est pas defini"
+
+        # si la variable est en position 1 elle doit etre suivi d'un "=" (asignation ou delcaration)
+        elif currentEl.type == TokenType.ID and  nextEl.value != "=" and start ==0:
+            return "Error Syntax: la varible '" + currentEl.value + "' n'est pas suivi d'un '='"
+
+
+        # si la variable n'est PAS en position 1 elle DOIT etre suivi d' OP(not : ) ou  EOL)
+        elif  not nextEl.value == ":" and currentEl.type == TokenType.ID  and not (nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL ) and start != 0:
+            return "Error Syntax: la varible '" + currentEl.value + "' est suivi d'un caractère incorect"
+
+
+        # si le token est un un nombre , il DOIT etre suivis d' OP(not : et =) ou de EOL
+        elif not nextEl.value == "=" and not nextEl.value == ":" and currentEl.type == TokenType.NUM and not (nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL ):
+            return "Error Syntax: le nombre '" + currentEl.value + "' est suivi d'un caractère incorect"
+
+        #   si la variable est un operateur elle DOIT etre suvis d'une variable ou d'un nombre
+        elif currentEl.type == TokenType.OP and not (nextEl.type == TokenType.ID or nextEl.type == TokenType.NUM ):
+            return ("Error Syntax: le nombre '" + currentEl.value + "' est suivi d'un caractère incorect")
         else:
             start += 1
             return scan(start, line)
@@ -197,22 +225,24 @@ def scan(start, line):
 
             varId+=1
             vartab[line[0].value] = varId
+            #
 
-            print(vartab)
-        # sinon assination
-        elif isVarNameAvailable(line[0],vartab) == True and  isIdNative(line[0] == False):
-            # vartab[line[0].type]
-            print(vartab)
-        return True
+
+    return True
 
 
 def parser(lines):
-
-
+    global equalCount
+    errortab = []
     for i in range(len(lines)):
         line = lines[i]
+        equalCount = 0
         res = scan(0, line)
-        print(res)
+        if(res != True):
+            errortab.append(res)
+            print("Line "+ str(i) +": "+res)
+        else:
+            print("Line " + str(i) + ": True ")
 
         # if name == "id":
         #     pass
