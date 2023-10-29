@@ -1,7 +1,7 @@
 a = 5 ;
 b = 100;
-c = a + b + 1;
-c = 5 + c * 5;
+c = a + b + 6;
+c = 5 + c * 5 ;
 erreur1 = t r + 4  ;
 erreur2 = 44 4 + 5;
 print: c;

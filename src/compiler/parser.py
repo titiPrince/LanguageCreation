@@ -131,97 +131,86 @@ int main()
 """
 Errors
 
-'<id><id>' : Unexcepted <id>
-'<num><num>' : Unexcepted <num>
-'<op><op>' : Unexcepted <op>
+'<id><id>' : Unexcepted <id> fait
+'<num><num>' : Unexcepted <num> fait
+'<op><op>' : Unexcepted <op> fait
 '<op.=>*<op.=>' : Unexcepted <op>
-'<eol><eol>' : Unexcepted <eol>
-'<op><eol>' : Incomplete expression
-'*<id.native>' : Unexcepted
+'<eol><eol>' : Unexcepted <eol> fait
+'<op><eol>' : Incomplete expression fait
+'*<id.native>' : Unexcepted fait 
+'id.name.not-exist'
 """
 
 NATIVES = [
     "print"
 ]
 
+vartab = {}
+varId = 0
 
-def parser(tokens):
-    vartab = {}
-    print(tokens)
-    lines = []
-    line = []
-    for i in range(len(tokens)-1):
-        if tokens[i][0] != "eol":
-            line.append((tokens[i][0], tokens[i][1]))
+
+def isVarNameAvailable(element, vartab):
+    return element.value in vartab.keys()
+
+
+def isIdNative(element):
+    return element.value in NATIVES
+
+
+def scan(start, line):
+    global varId
+
+    equalsCount = 0
+    # print(start)
+    # print(len(line))
+    if start != len(line) - 1:
+        currentEl = line[start]
+        nextEl = line[start + 1]
+        # print(currentEl)
+        # print(currentEl[0], nextEl[0])
+        # print()
+
+        # si deux element identiques a la suite
+        if (currentEl.type == nextEl.type):
+            return False
+
+        # si op suivi de eol
+        elif currentEl.type == TokenType.OP and nextEl.type == TokenType.EOL:
+            return False
+        #  si la fonction native n'est pas en premiere place
+        elif ((currentEl.type == TokenType.ID and isIdNative(currentEl) and start != 0) or
+              (nextEl.type == TokenType.ID and isIdNative(nextEl) and start != 0)):
+            return False
+        # si la varible n'existe pas
+        elif currentEl.type == TokenType.ID and isIdNative(currentEl) == False and isVarNameAvailable(currentEl ,vartab)== False and start!= 0:
+            return False
         else:
-            line.append((tokens[i][0], tokens[i][1]))
-            lines.append(line)
-            line = []
-    print(lines)
+            start += 1
+            return scan(start, line)
+    else:
+        # si ligne ok
+
+        # si declaration
+        if isVarNameAvailable(line[0],vartab) == False and  isIdNative(line[0]) == False):
+
+            varId+=1
+            vartab[line[0].value] = varId
+
+            print(vartab)
+        # sinon assination
+        elif isVarNameAvailable(line[0],vartab) == True and  isIdNative(line[0] == False):
+            # vartab[line[0].type]
+            print(vartab)
+        return True
+
+
+def parser(lines):
+
+
     for i in range(len(lines)):
-
         line = lines[i]
-        # print(line)
-
-        # print(line[1][0],line[1][1])
-        # print(line[2][0],line[2][1])
-            # print(j,len(line))
-        if ( 1<len(line) and
-             2 <len(line) and
-             3 <len(line) and
-             line[0][0] == "id" and
-             line[0][0] not in NATIVES and
-             line[1][1] == "=" and
-             # line[2][1] in vartab a fix , ne check pas bien
-             (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in vartab)) and
-             line[3][1] == ";"):
-            vartab[line[0][0]] = line[3][1]
-
-            print("une déclaration simple ligne "+ str(i+1) )
-            print("variable " +  line[0][1]+" initialisée")
-            print("####################")
-
-        elif ( 1<len(line) and
-             2 <len(line) and
-             3 <len(line) and
-             line[0][0] == "id" and
-             line[0][0] not in NATIVES and
-             line[1][1] == "=" and
-             (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in vartab)) and
-             line[3][1] != ";"):
-
-            start = 3
-            next = 4
-            last = 5
-
-            # j'en suis la (verif si les deux prochains charac
-            # sont operateur et nombre ou varibale deja déclarer
-            # et si le 3eme est une fin de ligne , si non false,
-            # si oui 2 charac mais pas fin de ligne continuer sinon finish)
-
-            # while(start<len(line) and next < len(line) and last <len(line)):
-            #     if(line[start][0] in "/*-+" and (line[next][0]== "num" or (line[2][0] == "num" or (line[2][0] == "id" and line[2][1] in NATIVES) )):
-            #         start+=1
-            #         next+=1
-            #         last +=1
-            #
-            #     else:
-            #         continue
-
-            vartab[line[0][0]] = line[3][1]
-
-            print("une declaration simple ligne "+ str(i+1) )
-            print("variable " + line[0][1] + " initialisée")
-            print("####################")
-
-
-        else:
-            print("ligne "+ str(i+1)+ "non valide")
-            print("####################")
-            # except IndexError:
-            #     print("out of range")
-
-            # Declaration simple
+        res = scan(0, line)
+        print(res)
 
 
 

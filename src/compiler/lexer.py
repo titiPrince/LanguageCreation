@@ -45,6 +45,17 @@ def lexer(source_file):
             else:
                 raise Exception("Character not allowed")
 
-        tokens.append(("eol", ";"))
+        tokens.append(Token(TokenType.EOL, 0))
 
-    return(tokens)
+    # Make list of line
+    line = []
+    lines = []
+
+    for token in tokens:
+        line.append(token)
+
+        if token.type == TokenType.EOL:
+            lines.append(line)
+            line = []
+
+    return lines
