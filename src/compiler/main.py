@@ -46,8 +46,6 @@ def main():
 
         os.system("./" + SOURCE_FILE + ".o")
 
-
-
     else:
         pass
 
