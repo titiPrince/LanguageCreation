@@ -1,0 +1,42 @@
+// A comment
+
+
+// Var declaration
+a = 0;
+
+
+// Var affectation
+a = 0;
+
+
+// Conditions
+si condition {
+    ...
+}
+et si condition {
+    ...
+}
+sinon {
+    ...
+}
+
+
+// Boucle for
+pour i quand i < 5 tous i++ {
+    ...
+}
+
+
+// Boucle while
+tant que
+
+
+// Function declaration
+proc nom param1 param2 param3 {
+    ...
+
+    return param1;
+}
+
+// Function call
+functionName(0, 1, 3);

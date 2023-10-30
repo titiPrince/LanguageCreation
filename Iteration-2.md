@@ -1,4 +1,7 @@
 # Objectifs
+Ajouter des Strings
+Ajouter des functions
+
 
 # Features
 - Operations mathematique `+ - * /`
