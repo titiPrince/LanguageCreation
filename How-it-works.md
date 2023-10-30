@@ -15,13 +15,9 @@ print: 42 * var + 1
 
 ### Etape 1 : **Lexer** _(Analyseur lexical)_
 Le **lexer** est un programme qui va segmenter le fichier texte, et trier ce qu'il si trouve dans une liste clef valeurs.
-
-![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/e279a354-00e2-486e-896b-27b88e364063)
-
    
 ### Etape 2 : **Parser** _(Analyseur syntaxique)_
 Le **parser** est un autre programme qui lui va prendre le resultat du **lexer** et structurer et verifier les instructions.
-
 
 ### Etape 3 : **Transpiler**
 Le Transpiler utilise le json generer par le parser et se charge de le traduire en un langage de programmation qui sera lui meme transpiler a son tours jusqu'a etre compile en code machine.
