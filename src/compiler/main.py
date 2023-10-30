@@ -2,7 +2,7 @@ from lexer import lexer
 from parserErrorHandler import parser
 from transpiler import transpile
 
-SOURCE_FILE = "test"
+SOURCE_FILE = "v1"
 
 """
 [

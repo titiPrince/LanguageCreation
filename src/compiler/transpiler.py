@@ -13,32 +13,68 @@ class Symbol:
     OPERATIONS = "+-*/"
 
 
+vartab = {}
+varincr = 0
+
+
+def varDeclared(var):
+    return var in vartab.keys()
+
+
 def transpile(lines):
+    global varincr
+
+    ast = AbstractSyntaxTree()
+
     for line in lines:
         line.reverse()
 
-        prevToken = None
-        skipNext = False
+        prevInstruct = None
+        currentInstr = None
 
         for i, token in enumerate(line):
             # if token.value == Symbol.ASSIGN: break
             if token.type == TokenType.EOL: continue
 
             if token.type == TokenType.NUM:
-                if isinstance(prevToken, BinaryOperation):
-                    # dcp faire d'autre trucks
-                prevToken = LiteralNumber(token.value)
+                currentInstr = LiteralNumber(token.value)
 
             elif token.type == TokenType.ID:
-                prevToken = VarReading(token.value)
+                currentInstr = VarReading(token.value)
 
             elif token.type == TokenType.OP:
                 if token.value in Symbol.OPERATIONS:
-                    prevToken = BinaryOperation(token.value, None, prevToken)
+                    currentInstr = BinaryOperation(token.value, None, prevInstruct)
 
-                # IL MANQUE LE FAIT QUE LE BINARY OPERATION PRECEDENT NE SOIT PAS REFILER DANS L'OPERATION SUIVANTE
+                elif token.value == Symbol.ASSIGN:
+                    nextToken = line[i+1]
 
-                print(lastOperation)
+                    if varDeclared(nextToken.value):
+                        currentInstr = VarAssignation(nextToken.value, prevInstruct)
+
+                    else:
+                        currentInstr = VarDeclaration(nextToken.value, prevInstruct)
+                        vartab[nextToken.value] = varincr
+                        varincr += 1
+
+                    ast.addInstruction(currentInstr)
+                    break
+
+                elif token.value == Symbol.CALL:
+                    ast.addInstruction(FunctionPrint(prevInstruct))
+                    break
+
+            if isinstance(prevInstruct, BinaryOperation):
+                if not isinstance(currentInstr, BinaryOperation):
+                    prevInstruct.setA(currentInstr)
+                else:
+                    prevInstruct = currentInstr
+
+            else:
+                prevInstruct = currentInstr
+
+    # print(ast)
+    print(ast.transpile())
 
 
 def transpile2(lines):
