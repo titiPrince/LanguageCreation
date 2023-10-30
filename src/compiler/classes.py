@@ -59,10 +59,16 @@ class VarReading(Instruction):
 class BinaryOperation(Instruction):
     def __init__(self,
                  operator: str,
-                 a: 'LiteralNumber | VarReading | BinaryOperation',
-                 b: 'LiteralNumber | VarReading | BinaryOperation'):
+                 a: 'LiteralNumber | VarReading | BinaryOperation | None',
+                 b: 'LiteralNumber | VarReading | BinaryOperation | None'):
         self.operator = operator
         self.a = a
+        self.b = b
+
+    def setA(self, a):
+        self.a = a
+
+    def setB(self, b):
         self.b = b
 
     def transpile(self):
