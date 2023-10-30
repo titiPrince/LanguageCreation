@@ -1,3 +1,5 @@
+import os
+
 from lexer import lexer
 from parserErrorHandler import parser
 from transpiler import transpile
@@ -32,15 +34,21 @@ SOURCE_FILE = "v1"
 def main():
     tokens = lexer(SOURCE_FILE)
     errors = parser(tokens)
-    print(errors)
 
     if not errors:
-        transpile(tokens)
+        c = transpile(tokens)
 
-    # si des erreur son presentes dans le code
+        with open(SOURCE_FILE + ".c", "w") as file:
+            file.write(c)
+
+        os.system("gcc " + SOURCE_FILE + ".c -o " + SOURCE_FILE + ".o")
+        os.remove(SOURCE_FILE + ".c")
+
+        os.system("./" + SOURCE_FILE + ".o")
+
+
 
     else:
-
         pass
 
 if __name__ == '__main__':

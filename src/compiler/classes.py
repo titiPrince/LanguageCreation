@@ -117,7 +117,8 @@ class FunctionPrint(NativeFunctionCall):
         for param in self.parameters:
             sparams += param.transpile() + ","
 
-        return f'{self.name}("%i",{sparams[0:-1]});'
+        return f'{self.name}("%i\\n",{sparams[0:-1]});'
+
 
 
 class AbstractSyntaxTree:

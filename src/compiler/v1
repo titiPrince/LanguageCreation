@@ -1,6 +1,8 @@
 a = 50 + 2;
 c = 1;
-f = 8;
+f = 10 * a;
+print: c;
 b = a - 3 + 2;
 b = a - 3 + a;
 print: b;
+print: f;

@@ -73,8 +73,7 @@ def transpile(lines):
             else:
                 prevInstruct = currentInstr
 
-    # print(ast)
-    print(ast.transpile())
+    return ast.transpile()
 
 
 def transpile2(lines):
