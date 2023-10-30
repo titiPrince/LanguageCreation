@@ -15,6 +15,9 @@ print: 42 * var + 1
 
 ### Etape 1 : **Lexer** _(Analyseur lexical)_
 Le **lexer** est un programme qui va segmenter le fichier texte, et trier ce qu'il si trouve dans une liste clef valeurs.
+
+![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/a62cb28c-43ca-48ff-a6e6-24b08415c32e)
+
    
 ### Etape 2 : **Parser** _(Analyseur syntaxique)_
 Le **parser** est un autre programme qui lui va prendre le resultat du **lexer** et structurer et verifier les instructions.
