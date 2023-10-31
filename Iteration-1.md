@@ -4,7 +4,7 @@ Créer un langage très simple basé uniquement sur des calculs mathématiques, 
 # Features
 - Operations mathematique `+ - * /`
 - Assignation de variables `nomdevariable = 0`
-- Affichage `print nomdevariable`
+- Affichage `print: nomdevariable / nombre`
 
 # Fonctionnement
 Le compiler est fait en Python et transpile vers du **C** puis compile en langage machine et l'execute.
