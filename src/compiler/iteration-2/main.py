@@ -21,7 +21,7 @@ if __name__ == '__main__':
     if not os.path.exists(source):
         raise Exception("The source file doesn't exists.")
 
-    if nargs == 2:
+    if nargs == 3:
         destination = sys.argv[2]
 
     sourceFile = open(source, "r")
