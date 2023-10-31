@@ -1,5 +1,5 @@
 # Objectifs
-Crer une version de notre langage plus aboutis suportant des instructions permettant de faire des algorithmes simple
+Creer une version de notre langage plus aboutis suportant des instructions permettant de faire des algorithmes simple
 
 
 # Features

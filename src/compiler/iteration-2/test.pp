@@ -1,4 +1,4 @@
-chaine = "Ceci est une chaine de caractere; si et si sinon";
+cha1ne = "Ceci est une chaine de caractere; si et si sinon";
 autrechaine = "un exemple" + chaine + "test" + " waw";
 
 a = "a";
@@ -24,7 +24,7 @@ sinon {
 
 count = 0;
 
-pour i quand i<50 tous i++ {
+pour i quand i<50 incr i++ {
   print(count);
   count = count + 1;
 }

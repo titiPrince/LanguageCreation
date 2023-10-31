@@ -35,16 +35,16 @@ if __name__ == '__main__':
 
     if not errors:
         ast = Parser.getAbstractTree(tokens)
-        languageC = ast.transpile()
-
-        destFile = open(source + ".c", "w")
-        destFile.write(languageC)
-        destFile.close()
-
-        os.system("gcc " + source + ".c -o " + destination)
-        os.remove(source + ".c")
-
-        os.system("./" + destination)
+        # languageC = ast.transpile()
+        #
+        # destFile = open(source + ".c", "w")
+        # destFile.write(languageC)
+        # destFile.close()
+        #
+        # os.system("gcc " + source + ".c -o " + destination)
+        # os.remove(source + ".c")
+        #
+        # os.system("./" + destination)
 
     else:
         raise Exception("\n".join(errors))
