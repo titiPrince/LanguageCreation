@@ -2,23 +2,6 @@ from re import match
 from .Symbols import *
 
 
-class TokenType:
-	ID = "ID"
-	OP = "OP"
-	NUM = "NUM"
-	STR = "STR"
-	BOX = "BOX"
-	EOL = "EOL"
-
-
-class Token:
-	def __init__(self, _type, _value):
-		self.type = _type
-		self.value = _value
-
-	def __str__(self):
-		return "TOKEN [" + str(self.type) + "]	= \"" + str(self.value) + "\""
-
 
 def scan(start: int, chars: str, regex: str) -> tuple[str, int]:
 	"""

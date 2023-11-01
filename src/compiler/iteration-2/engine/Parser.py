@@ -1,4 +1,5 @@
 from .Symbols import *
+from .Transpiler import *
 
 
 
@@ -116,5 +117,8 @@ def verifySyntax(tokens):
 
 
 def getAbstractTree(tokens):
+
+	ast = AbstractSyntaxTree()
+
 	for i, token in enumerate(tokens):
 		pass
