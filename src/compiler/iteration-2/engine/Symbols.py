@@ -1,5 +1,6 @@
 class Symbol:
     ASSIGN = "="
+
     EQUAL = "=="
     NEQUAL = "!="
     GREATER = ">"
@@ -11,18 +12,18 @@ class Symbol:
     OR = "or"
     NOT = "not"
 
-    EOL = ";"
     MUL = "*"
     ADD = "+"
     SUB = "-"
     DIV = "/"
-    OPERATIONS = "+-*/"
+    OPERATIONS = "+-*/=><!"
 
     QUOT = '"'
     PARS = "("
     PARE = ")"
     ACOS = "{"
     ACOE = "}"
+    EOL = ";"
+    BOXES = "(){}"
 
-
-
+    IGNORES = " \n"

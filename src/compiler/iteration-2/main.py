@@ -31,20 +31,20 @@ if __name__ == '__main__':
     sourceFile.close()
 
     tokens = lexer(script)
-    errors = Parser.verifySyntax(tokens)
-
-    if not errors:
-        ast = Parser.getAbstractTree(tokens)
-        # languageC = ast.transpile()
-        #
-        # destFile = open(source + ".c", "w")
-        # destFile.write(languageC)
-        # destFile.close()
-        #
-        # os.system("gcc " + source + ".c -o " + destination)
-        # os.remove(source + ".c")
-        #
-        # os.system("./" + destination)
-
-    else:
-        raise Exception("\n".join(errors))
+    # errors = Parser.verifySyntax(tokens)
+    #
+    # if not errors:
+    #     ast = Parser.getAbstractTree(tokens)
+    #     languageC = ast.transpile()
+    #
+    #     destFile = open(source + ".c", "w")
+    #     destFile.write(languageC)
+    #     destFile.close()
+    #
+    #     os.system("gcc " + source + ".c -o " + destination)
+    #     os.remove(source + ".c")
+    #
+    #     os.system("./" + destination)
+    #
+    # else:
+    #     raise Exception("\n".join(errors))

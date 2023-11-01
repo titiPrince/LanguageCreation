@@ -1,4 +1,4 @@
-from Symbols import *
+from .Symbols import *
 
 
 
@@ -43,7 +43,7 @@ def isIdNative(element):
 # )
 # ;
 
-for( i = 0 ; i < )
+# for( i = 0 ; i < )
 
 def verifySyntax(tokens):
     def scan(start, line):
