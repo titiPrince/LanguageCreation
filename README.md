@@ -1,4 +1,4 @@
-
+![banner](https://github.com/M-U-C-K-A/LanguageCreation/assets/96072629/4a9ddff3-9b99-4651-b4fa-c3088b8d8a69)
 # Lexer | Programming language
 
 Un langage efficace pour développer rapidement et proprement
@@ -29,7 +29,8 @@ Veuillez respecter le `code de conduite` de ce projet.
 ```python
 print: 42 * var + 1
 ```
-![image](https://github.com/titiPrince/LanguageCreation/assets/53018497/a62cb28c-43ca-48ff-a6e6-24b08415c32e)
+![code-template](https://github.com/M-U-C-K-A/LanguageCreation/assets/96072629/5c9fe373-4d7b-46e0-96c1-06f4e7a91eb3)
+
 
 ## Documentation
 
