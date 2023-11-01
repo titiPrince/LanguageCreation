@@ -49,7 +49,7 @@ equalCount = 0
 # for( i = 0 ; i < )
 
 def verifySyntax(tokens):
-
+	pass
 # def areBracketsValid(tokens):
 # 	countBrackets = 0
 # 	for i in tokens:

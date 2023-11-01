@@ -32,6 +32,14 @@ class LiteralNumber(Instruction):
         return str(self.value)
 
 
+class LiteralString(Instruction):
+    def __init__(self, value: str):
+        self.value = value
+
+    def transpile(self):
+        return str(self.value)
+
+
 class VarReading(Instruction):
     def __init__(self, name: str):
         self.name = name
@@ -43,8 +51,8 @@ class VarReading(Instruction):
 class BinaryOperation(Instruction):
     def __init__(self,
                  operation: str,
-                 a: 'LiteralNumber | VarReading | BinaryOperation | None',
-                 b: 'LiteralNumber | VarReading | BinaryOperation | None'):
+                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | None',
+                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | None'):
         self.operation = operation
         self.a = a
         self.b = b
@@ -62,8 +70,8 @@ class BinaryOperation(Instruction):
 class Condition(Instruction):
     def __init__(self,
                  operator: str,
-                 a: 'LiteralNumber | VarReading | BinaryOperation | Condition | None',
-                 b: 'LiteralNumber | VarReading | BinaryOperation | Condition | None'):
+                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None',
+                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None'):
         self.operator = operator
         self.a = a
         self.b = b
@@ -76,6 +84,43 @@ class Condition(Instruction):
 
     def transpile(self):
         return f"{self.a.transpile()}{self.operator}{self.b.transpile()}"
+
+
+class Block(Instruction):
+    def __init__(self, *instructions: Instruction):
+        self.instructions = [*instructions]
+
+    def add(self, *instructions: Instruction):
+        self.instructions += [*instructions]
+
+
+class ElseStatement(Instruction):
+    def __init__(self, block: Block):
+        self.block = block
+
+
+class ElseIfStatement(Instruction):
+    def __init__(self,
+                 condition: Condition,
+                 block: Block):
+        self.condition = condition
+        self.block = block
+
+
+class IfStatement(Instruction):
+    def __init__(self,
+                 condition: Condition,
+                 block: Block,
+                 branch: list[Instruction] | None):
+        self.condition = condition
+        self.block = block
+        self.branch = branch
+
+    def addBranch(self, *branch):
+        self.branch = [*branch]
+
+
+class ForLoop(Instruction): pass
 
 
 class VarAssignation(Instruction):
