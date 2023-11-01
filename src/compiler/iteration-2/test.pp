@@ -1,4 +1,4 @@
-cha1ne = "Ceci est une chaine de caractere; si et si sinon";
+cha1ne = "Ceci est une chaine de caractere";
 autrechaine = "un exemple" + chaine + "test" + " waw";
 
 a = "a";
@@ -15,7 +15,7 @@ sinon
 si 0 {
   print("c'est 0");
 }
-et si 1 {
+etsi 1 {
   print("c'est 1");
 }
 sinon {
