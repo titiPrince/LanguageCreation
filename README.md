@@ -1,7 +1,5 @@
-![banner](https://github.com/M-U-C-K-A/LanguageCreation/assets/96072629/4a9ddff3-9b99-4651-b4fa-c3088b8d8a69)
-# Lexer | Programming language
-
-Un langage efficace pour développer rapidement et proprement
+# Context
+We want to deepen our understanding of programming languages' functioning. To achieve this goal, we have decided to create our own language. Our intention is not to develop a complex language but rather to design an extremely simple language in order to grasp all the underlying intricacies of programming.
 
 ## Acknowledgements
 
@@ -13,24 +11,6 @@ Un langage efficace pour développer rapidement et proprement
 
 - [@vicous6](https://www.github.com/vicous6)
 - [@titiPrince ](https://www.github.com/titiPrince)
-
-
-## Contributing
-
-Les contributions sont toujours les bienvenues!
-
-Consultez `contributing.md` pour savoir comment commencer.
-
-Veuillez respecter le `code de conduite` de ce projet.
-
-
-## Usage/Examples
-
-```python
-print: 42 * var + 1
-```
-![code-template](https://github.com/M-U-C-K-A/LanguageCreation/assets/96072629/5c9fe373-4d7b-46e0-96c1-06f4e7a91eb3)
-
 
 ## Documentation
 
