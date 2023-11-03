@@ -1,15 +1,10 @@
-print okko;
-5 = 4;
-a= b+5;
-
-
 cha1ne = "Ceci est une chaine de caractere";
 autrechaine = "un exemple" + chaine + "test" + " waw";
 
 a = "a";
 b = "b" + a + "test";
 
-c = 1 + 2 * 5
+c = 1 + 2 * 5;
 
 si b == "ba" {
   a = "ab";
@@ -29,7 +24,7 @@ sinon {
 
 count = 0;
 
-pour i quand i<50 incr i++ {
+pour i quand i<50 incr 1 {
   print(count);
   count = count + 1;
 }

@@ -62,7 +62,7 @@ class Instruction(ABC):
         return output
 
     @abstractmethod
-    def transpile(self):
+    def transpile(self) -> str:
         return ""
 
 
@@ -147,13 +147,13 @@ class Condition(Instruction):
 
 class Block(Instruction):
     def __init__(self, *instructions: Instruction):
-        self.instructions = [*instructions]
+        self.instructions: list[Instruction] = [*instructions]
 
     def add(self, *instructions: Instruction):
         self.instructions += [*instructions]
 
     def transpile(self):
-        pass
+        return "".join([i.transpile() for i in self.instructions])
 
 
 class ElseStatement(Instruction):
@@ -161,7 +161,7 @@ class ElseStatement(Instruction):
         self.block = block
 
     def transpile(self):
-        pass
+        return f"else{{{self.block.transpile()}}}"
 
 
 class ElseIfStatement(Instruction):
@@ -172,26 +172,37 @@ class ElseIfStatement(Instruction):
         self.block = block
 
     def transpile(self):
-        pass
+        return f"else if({self.condition.transpile()}){{{self.block.transpile()}}}"
 
 
 class IfStatement(Instruction):
     def __init__(self,
                  condition: Condition,
                  block: Block,
-                 branch: list[ElseIfStatement] | None):
+                 elifBranch: list[ElseIfStatement] | None,
+                 elseBranch: ElseStatement | None):
         self.condition = condition
         self.block = block
-        self.branch = branch
+        self.elifBranch = elifBranch
+        self.elseBranch = elseBranch
 
-    def addBranch(self, *branch):
-        self.branch = [*branch]
+    def addElifBranch(self, *branch):
+        self.elifBranch += [*branch]
+
+    def setElseBranch(self, branch):
+        self.elseBranch = branch
 
     def transpile(self):
-        pass
+        elifs = "".join([b.transpile() for b in self.elifBranch])
+
+        return f"if({self.condition.transpile()}){{{self.block.transpile()}}}{elifs}{self.elseBranch.transpile()}"
 
 
-class ForLoop(Instruction): pass
+class ForLoop(Instruction):
+    def __init__(self,
+                 var: str,
+                 condition: Condition,
+                 incr: LiteralNumber | VarReading | BinaryOperation):
 
 
 class VarAssignation(Instruction):
