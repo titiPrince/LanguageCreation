@@ -42,10 +42,14 @@ def lexer(script: str) -> list[Token]:
 			i += 1
 			continue
 
+		elif script[i:i+2] == Symbol.EQUAL:
+			tokens.append(Token(TokenType.OP, Symbol.EQUAL))
+			i += 2
+
 		elif char in Symbol.OPERATIONS:
 			tokens.append(Token(TokenType.OP, char))
 
-		elif char is Symbol.EOL:
+		elif char == Symbol.EOL:
 			tokens.append(Token(TokenType.EOL, char))
 
 		elif char in Symbol.BOXES:
@@ -61,7 +65,7 @@ def lexer(script: str) -> list[Token]:
 			tokens.append(Token(TokenType.NUM, number))
 			i += end
 
-		elif char is Symbol.QUOT:
+		elif char == Symbol.QUOT:
 			string, end = scan(i + 1, script, "[^\"]")
 			tokens.append(Token(TokenType.STR, string))
 			i += end + 2
@@ -71,7 +75,7 @@ def lexer(script: str) -> list[Token]:
 
 		i += 1
 
-	for t in tokens:
-		print(t)
+	# for t in tokens:
+	# 	print(t)
 
 	return tokens

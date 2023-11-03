@@ -152,10 +152,16 @@ class Block(Instruction):
     def add(self, *instructions: Instruction):
         self.instructions += [*instructions]
 
+    def transpile(self):
+        pass
+
 
 class ElseStatement(Instruction):
     def __init__(self, block: Block):
         self.block = block
+
+    def transpile(self):
+        pass
 
 
 class ElseIfStatement(Instruction):
@@ -165,18 +171,24 @@ class ElseIfStatement(Instruction):
         self.condition = condition
         self.block = block
 
+    def transpile(self):
+        pass
+
 
 class IfStatement(Instruction):
     def __init__(self,
                  condition: Condition,
                  block: Block,
-                 branch: list[Instruction] | None):
+                 branch: list[ElseIfStatement] | None):
         self.condition = condition
         self.block = block
         self.branch = branch
 
     def addBranch(self, *branch):
         self.branch = [*branch]
+
+    def transpile(self):
+        pass
 
 
 class ForLoop(Instruction): pass
@@ -250,7 +262,9 @@ class AbstractSyntaxTree:
 
     def transpile(self):
         output = ("#include <stdio.h>\n#include <string.h>\nint main(){"
-                  "char* concat(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen(str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,len1);memcpy(result+len1,str2,len2+1);return result;}\n")
+                  "char* concat(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen("
+                  "str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,"
+                  "len1);memcpy(result+len1,str2,len2+1);return result;}\n")
 
         for instruction in self.instructions:
             output += instruction.transpile()
