@@ -1,6 +1,48 @@
 from abc import ABC, abstractmethod
 
 
+class VarManager:
+    ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
+    def __init__(self):
+        self.vars = []
+        self.count = 0
+
+    def __str__(self):
+        return "\n".join([f"Var {i}: {t} = {self.generateFromId(i)}" for i,t in enumerate(self.vars)])
+
+    def exists(self, var: str) -> bool:
+        return var in self.vars
+
+    def create(self, var: str) -> int | None:
+        if self.exists(var):
+            return None
+        self.vars.append(var)
+        self.count += 1
+
+    def getIdByName(self, name: str) -> int | None:
+        return self.vars.index(name) if self.exists(name) else None
+
+    def getNameById(self, id: int) -> str | None:
+        return self.vars[id] if id < self.count else None
+
+    def createOrGet(self, var: str) -> int:
+        id = self.create(var)
+        return self.vars.index(var) if id == None else id
+
+    def generateFromId(self, id: int) -> str:
+        result = ""
+
+        while id >= 0:
+            result = VarManager.ALPHABET[id % 26] + result
+            id = id // 26 - 1
+
+        return result
+
+    def generateFromName(self, name: str) -> str:
+        return self.generateFromId(self.createOrGet(name))
+
+
 class Instruction(ABC):
     def toString(self, offset):
         indentation = " " * (4 * offset)
@@ -37,7 +79,7 @@ class LiteralString(Instruction):
         self.value = value
 
     def transpile(self):
-        return '"self.value"'
+        return f'"{self.value}"'
 
 
 class VarReading(Instruction):
@@ -81,7 +123,7 @@ class StringConcat(Instruction):
         self.b = b
 
     def transpile(self): # MARCHE PAS CAR `a` PEUT ETRE LiteralString ET DONC STRCAT MARCHE PAS
-        return f"strcat({self.a.transpile()},{self.b.transpile()});"
+        return f"concat({self.a.transpile()},{self.b.transpile()})"
 
 
 class Condition(Instruction):
@@ -207,7 +249,8 @@ class AbstractSyntaxTree:
         self.instructions += instructions
 
     def transpile(self):
-        output = "#include <stdio.h>\n#include <string.h>\nint main(){"
+        output = ("#include <stdio.h>\n#include <string.h>\nint main(){"
+                  "char* concat(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen(str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,len1);memcpy(result+len1,str2,len2+1);return result;}\n")
 
         for instruction in self.instructions:
             output += instruction.transpile()
@@ -215,4 +258,17 @@ class AbstractSyntaxTree:
         return output + "}"
 
 
-t = VarDeclaration("a", LiteralNumber(5))
+if __name__ == '__main__':
+    from time import time
+
+    vars = VarManager()
+
+    vars.createOrGet("test")
+    vars.createOrGet("a")
+
+    id = "a"
+
+    a = time()
+    for i in range(12000):
+        id = vars.generateFromName(id)
+    print(time() - a)

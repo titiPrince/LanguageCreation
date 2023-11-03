@@ -135,7 +135,7 @@ def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
 
 	for i, token in enumerate(tokens):
 		if skip > 0:
-			skip -= 1
+			skip = skip - 1
 			continue
 
 		match (token.type):
