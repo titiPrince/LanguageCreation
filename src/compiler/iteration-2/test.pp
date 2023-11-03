@@ -1,3 +1,8 @@
+print okko;
+5 = 4;
+a= b+5;
+
+
 cha1ne = "Ceci est une chaine de caractere";
 autrechaine = "un exemple" + chaine + "test" + " waw";
 
