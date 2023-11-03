@@ -37,7 +37,7 @@ class LiteralString(Instruction):
         self.value = value
 
     def transpile(self):
-        return str(self.value)
+        return '"self.value"'
 
 
 class VarReading(Instruction):
@@ -51,8 +51,8 @@ class VarReading(Instruction):
 class BinaryOperation(Instruction):
     def __init__(self,
                  operation: str,
-                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | None',
-                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | None'):
+                 a: 'LiteralNumber | VarReading | BinaryOperation | None' = None,
+                 b: 'LiteralNumber | VarReading | BinaryOperation | None' = None):
         self.operation = operation
         self.a = a
         self.b = b
@@ -65,6 +65,23 @@ class BinaryOperation(Instruction):
 
     def transpile(self):
         return f"{self.a.transpile()}{self.operation}{self.b.transpile()}"
+
+
+class StringConcat(Instruction):
+    def __init__(self,
+                 a: 'LiteralString | VarReading | StringConcat | None' = None,
+                 b: 'LiteralString | VarReading | StringConcat | None' = None):
+        self.a = a
+        self.b = b
+
+    def setA(self, a):
+        self.a = a
+
+    def setB(self, b):
+        self.b = b
+
+    def transpile(self): # MARCHE PAS CAR `a` PEUT ETRE LiteralString ET DONC STRCAT MARCHE PAS
+        return f"strcat({self.a.transpile()},{self.b.transpile()});"
 
 
 class Condition(Instruction):
@@ -124,8 +141,11 @@ class ForLoop(Instruction): pass
 
 
 class VarAssignation(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | VarReading | BinaryOperation):
+    def __init__(self, name: str, value: LiteralNumber | VarReading | BinaryOperation = None):
         self.name = name
+        self.value = value
+
+    def setValue(self, value: LiteralNumber | VarReading | BinaryOperation):
         self.value = value
 
     def transpile(self):
@@ -133,11 +153,14 @@ class VarAssignation(Instruction):
 
 
 class VarDeclaration(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | VarReading | BinaryOperation):
+    def __init__(self, name: str, value: LiteralNumber | LiteralString | VarReading | BinaryOperation = None):
         self.name = name
         self.value = value
 
     def transpile(self):
+        if isinstance(self.value, LiteralString):
+            return f"char {self.name}[]={self.value.transpile()};"
+
         return f"int {self.name}={self.value.transpile()};"
 
 
@@ -184,7 +207,7 @@ class AbstractSyntaxTree:
         self.instructions += instructions
 
     def transpile(self):
-        output = "#include <stdio.h>\nint main(){"
+        output = "#include <stdio.h>\n#include <string.h>\nint main(){"
 
         for instruction in self.instructions:
             output += instruction.transpile()

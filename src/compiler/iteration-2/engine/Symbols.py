@@ -13,14 +13,8 @@ class Token:
 		self.value = _value
 
 	def __str__(self):
-		return "TOKEN [" + str(self.type) + "]	= \"" + str(self.value) + "\""
+		return "TOKEN [" + str(self.type) + "]	-> " + str(self.value)
 
-#   ID = 0
-#   OP = 1
-#   NUM = 2
-#   STR = 3 ["STR", truc]
-#   BOX = 4
-#   EOL = 5
 
 class Symbol:
 	ASSIGN = "="
@@ -41,6 +35,7 @@ class Symbol:
 	SUB = "-"
 	DIV = "/"
 	OPERATIONS = "+-*/=><!"
+	CALCS = "+-*/"
 
 	QUOT = '"'
 	PARS = "("
@@ -51,3 +46,11 @@ class Symbol:
 	BOXES = "(){}"
 
 	IGNORES = " \n"
+
+	IF = "si"
+	ELSEIF = "etsi"
+	ELSE = "sinon"
+
+	FOR = "pour"
+	FORCOND = "quand"
+	FORSTEP = "incr"

@@ -1,9 +1,10 @@
 cha1ne = "Ceci est une chaine de caractere";
 autrechaine = "un exemple" + chaine + "test" + " waw";
-si i = 2 {;
-  si i = 2 { "2"};
+
 a = "a";
-b = "b" + a;
+b = "b" + a + "test";
+
+c = 1 + 2 * 5
 
 si b == "ba" {
   a = "ab";

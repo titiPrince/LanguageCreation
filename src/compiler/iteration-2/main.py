@@ -31,6 +31,7 @@ if __name__ == '__main__':
     sourceFile.close()
 
     tokens = lexer(script)
+    ast = Parser.getAbstractTree(tokens)
     # errors = Parser.verifySyntax(tokens)
     #
     # if not errors:
