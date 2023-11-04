@@ -26,9 +26,9 @@ class Symbol:
 	LOWER = "<"
 	LOEQUAL= "<="
 
-	AND = "and"
-	OR = "or"
-	NOT = "not"
+	AND = "et"
+	OR = "ou"
+	NOT = "non"
 
 	MUL = "*"
 	ADD = "+"

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from .VarManager import *
 
 
 class Instruction(ABC):
@@ -81,16 +81,16 @@ class StringConcat(Instruction):
     def setB(self, b):
         self.b = b
 
-    def transpile(self) -> str: # MARCHE PAS CAR `a` PEUT ETRE LiteralString ET DONC STRCAT MARCHE PAS
-        return f"concat({self.a.transpile()},{self.b.transpile()})"
+    def transpile(self) -> str:
+        return f"C1({self.a.transpile()},{self.b.transpile()})"
 
 
 class Condition(Instruction):
     def __init__(self,
-                 operator: str,
+                 comparator: str,
                  a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None',
                  b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None'):
-        self.operator = operator
+        self.comparator = comparator
         self.a = a
         self.b = b
 
@@ -101,7 +101,7 @@ class Condition(Instruction):
         self.b = b
 
     def transpile(self) -> str:
-        return f"{self.a.transpile()}{self.operator}{self.b.transpile()}"
+        return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
 
 
 class Block(Instruction):
@@ -138,8 +138,8 @@ class IfStatement(Instruction):
     def __init__(self,
                  condition: Condition,
                  block: Block,
-                 elifBranch: list[ElseIfStatement] | None,
-                 elseBranch: ElseStatement | None):
+                 elifBranch: list[ElseIfStatement] = None,
+                 elseBranch: ElseStatement = None):
         self.condition = condition
         self.block = block
         self.elifBranch = elifBranch
@@ -152,16 +152,29 @@ class IfStatement(Instruction):
         self.elseBranch = branch
 
     def transpile(self) -> str:
-        elifs = "".join([b.transpile() for b in self.elifBranch])
-
+        elifs = "".join([b.transpile() for b in self.elifBranch]) if self.elifBranch else ""
         return f"if({self.condition.transpile()}){{{self.block.transpile()}}}{elifs}{self.elseBranch.transpile()}"
+
+
+class VarAssignation(Instruction):
+    def __init__(self, name: str, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
+        self.name = name
+        self.value = value
+
+    def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
+        self.value = value
+
+    def transpile(self) -> str:
+        if isinstance(self.value, (LiteralString, StringConcat)):
+            return f"SS1(&{self.name},{self.value.transpile()});"
+        return f"{self.name}={self.value.transpile()};"
 
 
 class ForLoop(Instruction):
     def __init__(self,
                  var: str,
                  condition: Condition,
-                 incr: LiteralNumber | VarReading | BinaryOperation = None,
+                 incr: LiteralNumber | VarReading | BinaryOperation | VarAssignation = None,
                  block: Block = None):
         self.var = var
         self.condition = condition
@@ -169,30 +182,27 @@ class ForLoop(Instruction):
         self.block = block
 
     def transpile(self) -> str:
-        return (f"for(int {self.var};{self.condition.transpile()};{self.var}={self.var}+({self.incr.transpile()}))"
+        if isinstance(self.incr, VarAssignation):
+            _incr = f"{self.incr.transpile()}"
+
+        elif isinstance(self.incr, LiteralNumber):
+            _incr = f"{self.var}={self.var}+({self.incr.transpile()})"
+
+        else:
+            _incr = f"{self.var}={self.incr.transpile()}"
+
+        return (f"for(int {self.var}=0;{self.condition.transpile()};{_incr})"
                 f"{{{self.block.transpile()}}}")
 
 
-class VarAssignation(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | VarReading | BinaryOperation = None):
-        self.name = name
-        self.value = value
-
-    def setValue(self, value: LiteralNumber | VarReading | BinaryOperation):
-        self.value = value
-
-    def transpile(self) -> str:
-        return f"{self.name}={self.value.transpile()};"
-
-
 class VarDeclaration(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | LiteralString | VarReading | BinaryOperation = None):
+    def __init__(self, name: str, value: LiteralNumber | LiteralString | StringConcat | VarReading | BinaryOperation = None):
         self.name = name
         self.value = value
 
     def transpile(self) -> str:
-        if isinstance(self.value, LiteralString):
-            return f"char {self.name}[]={self.value.transpile()};"
+        if isinstance(self.value, (LiteralString, StringConcat)):
+            return f"char* {self.name}={self.value.transpile()};"
 
         return f"int {self.name}={self.value.transpile()};"
 
@@ -212,7 +222,7 @@ class NativeFunctionCall(Instruction):
 
 
 class FunctionPrint(NativeFunctionCall):
-    def __init__(self, *parameters: LiteralNumber | VarReading | BinaryOperation):
+    def __init__(self, *parameters: LiteralNumber | LiteralString | VarReading | BinaryOperation):
         super().__init__("printf", *parameters)
 
     def transpile(self) -> str:
@@ -240,10 +250,12 @@ class AbstractSyntaxTree:
         self.instructions += instructions
 
     def transpile(self) -> str:
-        output = ("#include <stdio.h>\n#include <string.h>\nint main(){"
-                  "char* concat(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen("
+        output = ("#include <stdio.h>\n#include <string.h>\n#include <stdlib.h>\n"
+                  "char* C1(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen("
                   "str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,"
-                  "len1);memcpy(result+len1,str2,len2+1);return result;}\n")
+                  "len1);memcpy(result+len1,str2,len2+1);return result;}\n"
+                  "void SS1(char** dest,const char* src){size_t length=strlen(src);"
+                  "*dest=(char*)malloc((length+1)*sizeof(char));if(*dest!=NULL){strcpy(*dest, src);}}\nint main(){\n")
 
         for instruction in self.instructions:
             output += instruction.transpile()
@@ -252,16 +264,120 @@ class AbstractSyntaxTree:
 
 
 if __name__ == '__main__':
-    from time import time
+    root = AbstractSyntaxTree(
+        VarDeclaration("cha1ne", LiteralString("Ceci est une chaine de caractere")),
+        VarDeclaration("autrechaine",
+                       StringConcat(
+                           LiteralString("un exemple"),
+                           StringConcat(
+                               VarReading("cha1ne"),
+                               StringConcat(
+                                   LiteralString("test"),
+                                   LiteralString("waw")
+                               )
+                           )
+                       )),
+        VarDeclaration("a", LiteralString("a")),
+        VarDeclaration("b",
+                       StringConcat(
+                           LiteralString("b"),
+                           StringConcat(
+                               VarReading("a"),
+                               LiteralString("test")
+                           )
+                       )),
+        VarDeclaration("c",
+                       BinaryOperation("+",
+                                       LiteralNumber(1),
+                                       BinaryOperation("*",
+                                                       LiteralNumber(2),
+                                                       LiteralNumber(5)
+                                                       )
+                                       )
+                       ),
+        IfStatement(
+            Condition("==",
+                      VarReading("b"),
+                      LiteralString("ba")
+                      ),
+            Block(
+                VarAssignation("a",
+                               LiteralString("ab")
+                               )
+            ), None,
+            ElseStatement(
+                Block(
+                    VarAssignation("a",
+                                   LiteralString("aba")
+                                   )
+                )
+            )
+        ),
+        IfStatement(
+            Condition("!=",
+                      LiteralNumber(0),
+                      LiteralNumber(0)
+            ),
+            Block(
+                FunctionPrint(
+                    LiteralString("C'est 0")
+                )
+            ),
+            [
+                ElseIfStatement(
+                    Condition(
+                        "==",
+                        VarReading("a"),
+                        Condition(
+                            "and",
+                            LiteralString("ba"),
+                            Condition(
+                                "!=",
+                                LiteralNumber(1),
+                                Condition(
+                                    "or",
+                                    LiteralNumber(1),
+                                    Condition(
+                                        ">",
+                                        LiteralNumber(1),
+                                        LiteralNumber(5)
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    Block(
+                        FunctionPrint(LiteralString("C'est 1"))
+                    )
+                )
+            ],
+            ElseStatement(
+                Block(
+                    FunctionPrint(LiteralString("C'est rien"))
+                )
+            )
+        ),
+        VarDeclaration("count", LiteralNumber(0)),
+        ForLoop(
+            "i",
+            Condition(
+                "<",
+                VarReading("i"),
+                LiteralNumber(50)
+            ),
+            LiteralNumber(1),
+            Block(
+                FunctionPrint(VarReading("count")),
+                VarAssignation(
+                    "count",
+                    BinaryOperation(
+                        "+",
+                        VarReading("count"),
+                        LiteralNumber(1)
+                    )
+                )
+            )
+        )
+    )
 
-    vars = VarManager()
-
-    vars.createOrGet("test")
-    vars.createOrGet("a")
-
-    id = "a"
-
-    a = time()
-    for i in range(12000):
-        id = vars.generateFromName(id)
-    print(time() - a)
+    print(root.transpile())

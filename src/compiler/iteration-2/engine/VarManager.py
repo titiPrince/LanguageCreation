@@ -17,16 +17,6 @@ class VarManager:
 	"""
 	ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
-	@staticmethod
-	def generateFromId(_id: int) -> str:
-		result = ""
-
-		while _id >= 0:
-			result = VarManager.ALPHABET[_id % 26] + result
-			_id = _id // 26 - 1
-
-		return result
-
 	def __init__(self):
 		self.vars = [[]]
 		self.count = 0
@@ -75,6 +65,14 @@ class VarManager:
 		id = self.create(name)
 		return self.vars[self.scope].index(name) if id == None else id
 
+	def generateFromId(self, _id: int) -> str:
+		result = ""
+
+		while _id >= 0:
+			result = VarManager.ALPHABET[_id % 26] + result
+			_id = _id // 26 - 1
+
+		return result
 
 	def generateFromName(self, name: str) -> str:
 		"""

@@ -1,5 +1,5 @@
-cha1ne = "Ceci est une chaine de caractere";
-autrechaine = "un exemple" + cha1ne + "test" + " waw";
+chaine = "Ceci est une chaine de caractere";
+autrechaine = "un exemple" + chaine + "test" + " waw";
 
 a = "a";
 b = "b" + a + "test";
