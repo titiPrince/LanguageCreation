@@ -1,6 +1,18 @@
 from abc import ABC, abstractmethod
 from .VarManager import *
 
+"""
+Pour gerer la memoire en C il faudrais un tableau d'une taille qui est 
+calculer a l'avance par le compiler(python) grace a VarManager qui retournerais le nombre
+puis en C pour get et set une variable il y aurais une fonction getVar et setVar qui liraient 
+le tableau en fonction de l'id de la variable. l'id de la variable est directement ecris par le transpiler
+dans les fonctions getVar et setVar.
+
+pour gerer le dynamisme de type en C il faudrais que le tableau soit une liste de struct qui possede
+deux attribut l'un int et l'autre char[].  puis un dernier attribut qui specifie de quel type est actuellement
+la variable.
+
+"""
 
 class Instruction(ABC):
     def toString(self, offset):

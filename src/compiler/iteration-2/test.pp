@@ -3,9 +3,9 @@ autrechaine = "un exemple" + cha1ne + "test" + " waw";
 
 a = "a";
 b = "b" + a + "test";
-
+a = 5
 c = 1 + 2 * 5;
-
+a = c
 si b == "ba" {
   a = "ab";
 }
