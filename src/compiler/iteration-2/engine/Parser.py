@@ -4,7 +4,15 @@ from .Transpiler import *
 
 
 NATIVES = [
-	"print"
+	"print",
+	"si",
+	"sinon",
+	"etsi",
+	"pour",
+	"et",
+	"ou",
+	"quand",
+	"inc",
 ]
 
 
@@ -41,26 +49,6 @@ def isIdNative(element):
 
 # for( i = 0 ; i < )
 
-# def verifySyntax(tokens):
-# 	print('coucou')
-#
-# 	return scan(0,tokens)
-# def areBracketsValid(tokens):
-# 	countBrackets = 0
-# 	for i in tokens:
-# 		if i.value== "{" :
-# 			countBrackets+=1
-# 		elif i.value== "}":
-# 			countBrackets-=1
-# 	return True if countBrackets == 0  else False
-# def areParenthesisValid(tokens):
-# 	countParentesises = 0
-# 	for i in tokens:
-# 		if i.value== "(" :
-# 			countParentesises+=1
-# 		elif i.value== ")":
-# 			countParentesises-=1
-# 	return True if countParentesises == 0  else False
 
 isIf = False
 isFor = False
@@ -68,11 +56,11 @@ isFor = False
 isBegin= True
 isNotBegin = False
 
-vartab = {}
+vartab = {"si":-3,"sinon":-2,"etsi":-1}
 varId = 0
 equalCount = 0
 
-def scan(start, tokens):
+def scan( tokens):
 	global varId
 	global equalCount
 	global isBegin
@@ -82,10 +70,11 @@ def scan(start, tokens):
 
 
 	# defini si c'est le debut d'une intruction
-	start = 0
-	for i in range(len(tokens)):
-		currentEl = tokens[start]
-		nextEl = tokens[start + 1]
+
+	for i in range(len(tokens)-1):
+		currentEl = tokens[i]
+		nextEl = tokens[i + 1]
+		print(currentEl.type)
 		# # index 0 de l'iteration
 		if currentEl.type is TokenType.BOX and currentEl.value == "{":
 			bracketCount += 1
@@ -103,6 +92,7 @@ def scan(start, tokens):
 
 
 
+
 		if i == 0 and (
 			currentEl.type is TokenType.OP or
 			currentEl.type is TokenType.BOX or
@@ -112,29 +102,45 @@ def scan(start, tokens):
 		):
 			return "tu fait pas d'effort dès le premier charactère"
 
+		if ((currentEl.type is TokenType.STR)
+				and not (nextEl.value == "(" or nextEl.value == ")" or nextEl.value == "{" or nextEl.value == "}" or nextEl.value == ";" or nextEl.type is TokenType.OP or  nextEl.value == "et" or  nextEl.value == "ou")):
+				and not (la
+			return "Error Syntax: String:"+ currentEl.value + " is follow by a false stateùe,nt"
+		#
 		#  si la fonction native est en première place elle DOIT etre suivi de (
-		elif currentEl.type is TokenType.ID and isIdNative(currentEl) and not nextEl.value is Symbol.PARS and isBegin:
+		elif currentEl.type is TokenType.ID and isIdNative(currentEl) and not nextEl.value is Symbol.PARS and isBegin and currentEl.value == "print":
 			return "Error Syntax: A native function must be follow by '('"
 
+		#
+		# # si la varible n'existe pas dans vartab et n'est pas en 1ere position
+		# elif (currentEl.type is TokenType.ID and not isIdNative(currentEl) and not isVarNameAvailable(currentEl, vartab)
+		# 		and isNotBegin):
+		# 	print(isNotBegin)
+		# 	return "Error Syntax: la varible '" + currentEl.value + "' n'est pas defini : token :"+ str(i)
+		# # si la variable est en position 1 elle doit etre suivi d'un "=" (asignation ou delcaration)
+		# elif (currentEl.type is TokenType.ID and not isIdNative(currentEl) and nextEl.value != "=" and isBegin ):
+		# 	return "Error Syntax: la varible '" + currentEl.value + "' n'est pas suivi d'un '='"
+		#
+		# # en debut d'unstruction push le n
+		# if isVarNameAvailable(currentEl, vartab) == False and isIdNative(currentEl) == False and isBegin and currentEl.value != "}":
+		# 	varId += 1
+		# 	vartab[currentEl.value] = varId
+		# print(vartab)
+		#
+		#
+		# if(isBegin and currentEl.value != "}"):
+		# 	isBegin = False
+		# 	isNotBegin = True
+		# elif currentEl.value == ";" or currentEl.value=="}":
+		# 	isBegin = True
+		# 	isNotBegin = False
+		#
+		#
 
-		# si la varible n'existe pas dans vartab et n'est pas en 1ere position
-		elif currentEl.type is TokenType.ID and not isIdNative(currentEl) and not isVarNameAvailable(currentEl,vartab) and isNotBegin:
-
-			return "Error Syntax: la varible '" + currentEl.value + "' n'est pas defini"
-
-		# si la variable est en position 1 elle doit etre suivi d'un "=" (asignation ou delcaration)
-		elif currentEl.type is TokenType.ID and not isIdNative(currentEl) and nextEl.value != "=" and isBegin:
-			return "Error Syntax: la varible '" + currentEl.value + "' n'est pas suivi d'un '='"
 
 
 
-		if(isBegin):
-			isBegin = False
-			isNotBegin = True
-		elif currentEl.value == ";":
-			isBegin = True
-			isNotBegin = False
-		print(isBegin)
+
 
 def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
 	def scanBranch(tokens: list[Token]) -> tuple[int, list[Instruction]]:
