@@ -1,47 +1,6 @@
 from abc import ABC, abstractmethod
 
 
-class VarManager:
-    ALPHABET = "abcdefghijklmnopqrstuvwxyz"
-
-    def __init__(self):
-        self.vars = []
-        self.count = 0
-
-    def __str__(self):
-        return "\n".join([f"Var {i}: {t} = {self.generateFromId(i)}" for i,t in enumerate(self.vars)])
-
-    def exists(self, var: str) -> bool:
-        return var in self.vars
-
-    def create(self, var: str) -> int | None:
-        if self.exists(var):
-            return None
-        self.vars.append(var)
-        self.count += 1
-
-    def getIdByName(self, name: str) -> int | None:
-        return self.vars.index(name) if self.exists(name) else None
-
-    def getNameById(self, id: int) -> str | None:
-        return self.vars[id] if id < self.count else None
-
-    def createOrGet(self, var: str) -> int:
-        id = self.create(var)
-        return self.vars.index(var) if id == None else id
-
-    def generateFromId(self, id: int) -> str:
-        result = ""
-
-        while id >= 0:
-            result = VarManager.ALPHABET[id % 26] + result
-            id = id // 26 - 1
-
-        return result
-
-    def generateFromName(self, name: str) -> str:
-        return self.generateFromId(self.createOrGet(name))
-
 
 class Instruction(ABC):
     def toString(self, offset):
@@ -70,7 +29,7 @@ class LiteralNumber(Instruction):
     def __init__(self, value: int):
         self.value = value
 
-    def transpile(self):
+    def transpile(self) -> str:
         return str(self.value)
 
 
@@ -78,7 +37,7 @@ class LiteralString(Instruction):
     def __init__(self, value: str):
         self.value = value
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f'"{self.value}"'
 
 
@@ -86,7 +45,7 @@ class VarReading(Instruction):
     def __init__(self, name: str):
         self.name = name
 
-    def transpile(self):
+    def transpile(self) -> str:
         return self.name
 
 
@@ -105,7 +64,7 @@ class BinaryOperation(Instruction):
     def setB(self, b):
         self.b = b
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f"{self.a.transpile()}{self.operation}{self.b.transpile()}"
 
 
@@ -122,7 +81,7 @@ class StringConcat(Instruction):
     def setB(self, b):
         self.b = b
 
-    def transpile(self): # MARCHE PAS CAR `a` PEUT ETRE LiteralString ET DONC STRCAT MARCHE PAS
+    def transpile(self) -> str: # MARCHE PAS CAR `a` PEUT ETRE LiteralString ET DONC STRCAT MARCHE PAS
         return f"concat({self.a.transpile()},{self.b.transpile()})"
 
 
@@ -141,7 +100,7 @@ class Condition(Instruction):
     def setB(self, b):
         self.b = b
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f"{self.a.transpile()}{self.operator}{self.b.transpile()}"
 
 
@@ -152,7 +111,7 @@ class Block(Instruction):
     def add(self, *instructions: Instruction):
         self.instructions += [*instructions]
 
-    def transpile(self):
+    def transpile(self) -> str:
         return "".join([i.transpile() for i in self.instructions])
 
 
@@ -160,7 +119,7 @@ class ElseStatement(Instruction):
     def __init__(self, block: Block):
         self.block = block
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f"else{{{self.block.transpile()}}}"
 
 
@@ -171,7 +130,7 @@ class ElseIfStatement(Instruction):
         self.condition = condition
         self.block = block
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f"else if({self.condition.transpile()}){{{self.block.transpile()}}}"
 
 
@@ -192,7 +151,7 @@ class IfStatement(Instruction):
     def setElseBranch(self, branch):
         self.elseBranch = branch
 
-    def transpile(self):
+    def transpile(self) -> str:
         elifs = "".join([b.transpile() for b in self.elifBranch])
 
         return f"if({self.condition.transpile()}){{{self.block.transpile()}}}{elifs}{self.elseBranch.transpile()}"
@@ -202,7 +161,16 @@ class ForLoop(Instruction):
     def __init__(self,
                  var: str,
                  condition: Condition,
-                 incr: LiteralNumber | VarReading | BinaryOperation):
+                 incr: LiteralNumber | VarReading | BinaryOperation = None,
+                 block: Block = None):
+        self.var = var
+        self.condition = condition
+        self.incr = incr
+        self.block = block
+
+    def transpile(self) -> str:
+        return (f"for(int {self.var};{self.condition.transpile()};{self.var}={self.var}+({self.incr.transpile()}))"
+                f"{{{self.block.transpile()}}}")
 
 
 class VarAssignation(Instruction):
@@ -213,7 +181,7 @@ class VarAssignation(Instruction):
     def setValue(self, value: LiteralNumber | VarReading | BinaryOperation):
         self.value = value
 
-    def transpile(self):
+    def transpile(self) -> str:
         return f"{self.name}={self.value.transpile()};"
 
 
@@ -222,7 +190,7 @@ class VarDeclaration(Instruction):
         self.name = name
         self.value = value
 
-    def transpile(self):
+    def transpile(self) -> str:
         if isinstance(self.value, LiteralString):
             return f"char {self.name}[]={self.value.transpile()};"
 
@@ -234,7 +202,7 @@ class NativeFunctionCall(Instruction):
         self.name = name
         self.parameters = parameters
 
-    def transpile(self):
+    def transpile(self) -> str:
         sparams = ""
 
         for param in self.parameters:
@@ -247,7 +215,7 @@ class FunctionPrint(NativeFunctionCall):
     def __init__(self, *parameters: LiteralNumber | VarReading | BinaryOperation):
         super().__init__("printf", *parameters)
 
-    def transpile(self):
+    def transpile(self) -> str:
         sparams = ""
 
         for param in self.parameters:
@@ -271,7 +239,7 @@ class AbstractSyntaxTree:
     def addInstruction(self, *instructions: Instruction):
         self.instructions += instructions
 
-    def transpile(self):
+    def transpile(self) -> str:
         output = ("#include <stdio.h>\n#include <string.h>\nint main(){"
                   "char* concat(const char* str1,const char* str2){size_t len1=strlen(str1);size_t len2=strlen("
                   "str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,"
