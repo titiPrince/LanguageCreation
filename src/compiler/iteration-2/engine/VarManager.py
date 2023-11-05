@@ -1,3 +1,14 @@
+class VarType:
+	INTEGER = 0
+	STRING = 1
+
+class Variable:
+	def __init__(self, _name: str, _shortname: str, _type: int | None):
+		self.name = _name
+		self.short = _shortname
+		self.type = _type
+
+
 class VarManager:
 	"""
 	Keep the variable references in memory and give a short name of this reference
@@ -34,9 +45,12 @@ class VarManager:
 		:param name: The name of the variable to check.
 		:return: **True** if the variable exists in the current scope. **False** if not.
 		"""
-		return name in self.vars[self.scope]
+		for var in self.vars[self.scope]:
+			if var.name == name: return True
+		return False
 
-	def create(self, name: str) -> int | None:
+
+	def create(self, name: str, _type: int = None) -> int:
 		"""
 		Create a new variable in the current scope memory with the given variable name.
 
@@ -45,25 +59,34 @@ class VarManager:
 		:return: The new variable's int **id** or **None** if the variable already exists in the current scope.
 		"""
 		if self.exists(name):
-			return None
-		self.vars[self.scope].append(name)
+			return -1
+
+		self.vars[self.scope].append( Variable(name, self.generateFromId(self.count), _type) )
 		self.count += 1
+
 		return self.count - 1
 
-	def getIdByName(self, name: str) -> int | None:
-		return self.vars[self.scope].index(name) if self.exists(name) else None
+	def getIdByName(self, name: str) -> int:
+		for i, var in enumerate(self.vars[self.scope]):
+			if var.name == name: return i
+		return -1
 
-	def getNameById(self, id: int) -> str | None:
+	def getVarById(self, id: int) -> str | None:
 		return self.vars[self.scope][id] if id < self.count else None
 
-	def createOrGet(self, name: str) -> int:
+	def createOrGet(self, name: str, _type: int = None) -> int:
 		"""
 		Will look if the variable exists and then return its id, but will create a new one if it doesn't exist.
 		:param name: The name of the variable to create or get.
 		:return: Return the `int` **id** of the variable in any case.
 		"""
-		id = self.create(name)
-		return self.vars[self.scope].index(name) if id == None else id
+		for i, var in enumerate(self.vars[self.scope]):
+			if var.name == name: return i
+
+		self.vars[self.scope].append( Variable(name, self.generateFromId(self.count), _type) )
+		self.count += 1
+
+		return self.count - 1
 
 	def generateFromId(self, _id: int) -> str:
 		result = ""
@@ -108,33 +131,30 @@ if __name__ == "__main__":
 	varId = vm.createOrGet("usage")
 
 	# Get the name of the variable from its id => "usage".
-	name = vm.getNameById(varId)
+	var1 = vm.getVarById(varId)
 
 	# Show that if you try to create a variable who already exists, it will return the same id.
-	thisVarAlreadyExist = varId == vm.createOrGet("usage")
 
-	if thisVarAlreadyExist:
-		print(f"The var '{name}' already exist in this scope")
+	if varId == vm.createOrGet("usage"):
+		print(f"The var '{var1.name}' already exist in this scope")
 
 	# Starting a new scope
 	vm.startScope()
 
 	# Create a specific variable in this new scope
 	varIdInScope = vm.createOrGet("scopeUsage")
-	varNameInScope = vm.getNameById(varIdInScope)
+	var2 = vm.getVarById(varIdInScope)
 
 	# Show that the scopes keep the previous variables in their memory
 	if varId == vm.createOrGet("usage"):
-		print(f"The var '{name}' always exist in this new scope")
+		print(f"The var '{var1.name}' always exist in this new scope")
 
 	# Terminate this current scope
 	vm.endScope()
 
 	# Show that the variables previously created in a different scope don't exist anymore
 	if varIdInScope != vm.createOrGet("scopeUsage"):
-		print(f"The var '{varNameInScope}' doesn't exist in this scope")
+		print(f"The var '{var2.name}' doesn't exist in this scope")
 
-	# Generate a short name from the name of the variable (or its id)
-	shortName = vm.generateFromName("usage")
-
-	print(shortName)
+	# Get the short name of the variable
+	print(var1.short)

@@ -255,7 +255,8 @@ class AbstractSyntaxTree:
                   "str2);char* result=(char*)malloc(len1+len2+1);if(result==NULL)return NULL;memcpy(result,str1,"
                   "len1);memcpy(result+len1,str2,len2+1);return result;}\n"
                   "void SS1(char** dest,const char* src){size_t length=strlen(src);"
-                  "*dest=(char*)malloc((length+1)*sizeof(char));if(*dest!=NULL){strcpy(*dest, src);}}\nint main(){\n")
+                  "*dest=(char*)malloc((length+1)*sizeof(char));if(*dest!=NULL){strcpy(*dest, src);}}\n"
+                  "int main(){\n")
 
         for instruction in self.instructions:
             output += instruction.transpile()
