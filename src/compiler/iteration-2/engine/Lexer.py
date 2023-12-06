@@ -42,8 +42,8 @@ def lexer(script: str) -> list[Token]:
 			i += 1
 			continue
 
-		elif script[i:i+2] == Symbol.EQUAL:
-			tokens.append(Token(TokenType.OP, Symbol.EQUAL))
+		elif script[i:i+2] in (Symbol.EQUAL, Symbol.NEQUAL, Symbol.GREATER, Symbol.LOWER, Symbol.GREQUAL, Symbol.LOEQUAL):
+			tokens.append(Token(TokenType.OP, script[i:i+2]))
 			i += 2
 
 		elif char in Symbol.OPERATIONS:

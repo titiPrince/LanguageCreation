@@ -1,5 +1,6 @@
 from .Symbols import *
 from .Transpiler import *
+from .VarManager import *
 
 
 
@@ -138,33 +139,125 @@ def scan( tokens):
 		#
 
 
+def scanInstruction(tokens: list[Token]) -> tuple[int, Condition]:
+	pass
 
 
+def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
+	lastParam = None
+	currentParam = None
 
+	for i, token in enumerate(tokens):
+		# Token detection
+		match (token.type):
+			case TokenType.ID:
+				if token.value in (Symbol.AND, Symbol.NOT, Symbol.OR):
+					currentParam = BoolComparison(token.value)
+
+				else:
+					currentParam = VarReading(token.value)
+
+			case TokenType.OP:
+				if token.value in Symbol.CALCS:
+					currentParam = BinaryOperation(token.value)
+
+				else:
+					currentParam = Condition(token.value)
+
+			case TokenType.NUM:
+				currentParam = LiteralNumber(token.value)
+
+			case TokenType.STR:
+				currentParam = LiteralString(token.value)
+
+			case TokenType.BOX:
+				if token.value == Symbol.ACOS:
+					return i, lastParam
+
+		# Condition assembler
+		if lastParam is None:
+			lastParam = currentParam
+
+		elif isinstance(lastParam, (Condition, BoolComparison)):
+			lastParam.setB(currentParam)
+
+		elif isinstance(currentParam, (Condition, BoolComparison)):
+			currentParam.setA(lastParam)
+			lastParam = currentParam
+
+
+def scanIfStatement(tokens: list[Token]) -> tuple[int, IfStatement]:
+	# Main
+	ptrCondition, condition = scanCondition(tokens)
+	ptrBlock, block = scanBlock(tokens[ptrCondition+1:])
+
+	statement = IfStatement(condition, block)
+
+	token = tokens[ptrBlock + 1]
+	pointer = ptrBlock + 1
+
+	# Else if
+	while token.value == Symbol.ELSEIF:
+		ptrElseIfCondition, elseIfCondition = scanCondition(tokens[pointer + 1:])
+		ptrElseIfBlock, elseIfBlock = scanBlock(tokens[ptrElseIfCondition + 1:])
+
+		statement.addElifBranch(ElseIfStatement(elseIfCondition, elseIfBlock))
+
+		token = tokens[ptrElseIfBlock + 1]
+		pointer = ptrElseIfBlock + 1
+
+	# Else
+	if token == Symbol.ELSE:
+		ptrElseBlock, elseBlock = scanBlock(tokens[pointer + 1:])
+
+		statement.elseBranch = ElseStatement(elseBlock)
+
+		pointer = ptrElseBlock + 1
+
+	return pointer, statement
+
+
+def scanForLoop(tokens: list[Token]) -> tuple[int, ForLoop]:
+	var = tokens[0].value
+
+	ptrCondition, condition = scanCondition(tokens[1:])
+	ptrIncr, incr = scanInstruction(tokens[ptrCondition + 2:])
+	ptrBlock, block = scanBlock(tokens[ptrIncr + 1:])
+
+	statement = ForLoop(var, condition, incr, block)
+
+	return ptrBlock, statement
+
+
+def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
+	for i, token in enumerate(tokens):
+		match (token.type):
+			case TokenType.ID:
+				if token.value == Symbol.IF:
+					ptrIfStatement, ifStatementBlock = scanIfStatement(tokens[i+1:])
+
+				elif token.value == Symbol.FOR:
+					ptrForLoop, forLoopBlock = scanForLoop(tokens[i + 1:])
+
+			case TokenType.OP:
+				break
+
+			case TokenType.NUM:
+				break
+
+			case TokenType.STR:
+				break
+
+			case TokenType.BOX:
+				break
+
+			case TokenType.EOL:
+				stackInstruction = []
 
 def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
-	def scanBranch(tokens: list[Token]) -> tuple[int, list[Instruction]]:
-		return tuple()
+	def scanInstruction(tokens: list[Token]) -> Instruction:
+		pass
 
-	def isVarDeclared(name: str) -> bool:
-		return name in declaredVar.keys()
-
-	def getLastStack():
-		if inCondition:
-			return stackCondition[-1] if stackCondition else None
-		return stackInstruction[-1] if stackInstruction else None
-
-	ast = AbstractSyntaxTree()
-
-	declaredVar = {}
-
-	instruction = None
-	stackInstruction = []
-
-	inCondition = False
-	stackCondition = []
-
-	skip = 0
 
 	for i, token in enumerate(tokens):
 		if skip > 0:
@@ -173,60 +266,13 @@ def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
 
 		match (token.type):
 			case TokenType.ID:
-				if token.value in [Symbol.IF, Symbol.ELSEIF]:
-					inCondition = True
-					stackCondition = []
-
-				elif token.value is Symbol.ELSE:
-					pass
-
-				elif token.value in [Symbol.FOR, Symbol.FORCOND, Symbol.FORSTEP]:
-					pass
-
-				else:
-					if inCondition:
-						stackCondition.append(VarReading(token.value))
-
-					else:
-						if isVarDeclared(token.value):
-							instruction = VarAssignation(token.value)
-
-						else:
-							instruction = VarDeclaration(token.value)
-
 				break
 
 			case TokenType.OP:
-				if token.value is Symbol.EQUAL:
-					if inCondition:
-						pass
-
-					else:
-						continue
-
-				elif token.value in Symbol.CALCS:
-					lastStack = getLastStack()
-
-					if isinstance(lastStack, BinaryOperation):
-						lastStack.setB(BinaryOperation(token.value, lastStack.b))
-
-					else:
-						stackInstruction.append(LiteralNumber(token.value))
-
 				break
 
 			case TokenType.NUM:
-				if inCondition:
-					pass
-
-				else:
-					lastStack = getLastStack()
-
-					if isinstance(lastStack, BinaryOperation):
-						lastStack.setB(LiteralNumber(token.value))
-
-					else:
-						stackInstruction.append(LiteralNumber(token.value))
+				break
 
 			case TokenType.STR:
 				break

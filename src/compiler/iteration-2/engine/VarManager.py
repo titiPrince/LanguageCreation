@@ -2,6 +2,7 @@ class VarType:
 	INTEGER = 0
 	STRING = 1
 
+
 class Variable:
 	def __init__(self, _name: str, _shortname: str, _type: int | None):
 		self.name = _name
@@ -49,19 +50,19 @@ class VarManager:
 			if var.name == name: return True
 		return False
 
-
 	def create(self, name: str, _type: int = None) -> int:
 		"""
 		Create a new variable in the current scope memory with the given variable name.
 
 		**Prefer using the** ``createOrGet`` **method than this one!**
+		:param _type:
 		:param name: The variable's name.
 		:return: The new variable's int **id** or **None** if the variable already exists in the current scope.
 		"""
 		if self.exists(name):
 			return -1
 
-		self.vars[self.scope].append( Variable(name, self.generateFromId(self.count), _type) )
+		self.vars[self.scope].append(Variable(name, self.generateFromId(self.count), _type))
 		self.count += 1
 
 		return self.count - 1
@@ -71,7 +72,7 @@ class VarManager:
 			if var.name == name: return i
 		return -1
 
-	def getVarById(self, id: int) -> str | None:
+	def getVarById(self, id: int) -> Variable | None:
 		return self.vars[self.scope][id] if id < self.count else None
 
 	def createOrGet(self, name: str, _type: int = None) -> int:
@@ -83,7 +84,7 @@ class VarManager:
 		for i, var in enumerate(self.vars[self.scope]):
 			if var.name == name: return i
 
-		self.vars[self.scope].append( Variable(name, self.generateFromId(self.count), _type) )
+		self.vars[self.scope].append(Variable(name, self.generateFromId(self.count), _type))
 		self.count += 1
 
 		return self.count - 1
@@ -117,9 +118,9 @@ class VarManager:
 		"""
 		Forget the current scope and go back in the previous scope.
 		"""
-		if self.scope < 1: return
-		del self.vars[self.scope]
-		self.scope -= 1
+		if self.scope >= 1:
+			del self.vars[self.scope]
+			self.scope -= 1
 
 
 # Usages example

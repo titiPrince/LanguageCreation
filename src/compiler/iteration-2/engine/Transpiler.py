@@ -104,6 +104,25 @@ class Condition(Instruction):
         return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
 
 
+class BoolComparison(Instruction):
+    def __init__(self,
+                 comparator: str,
+                 a: 'Condition | None',
+                 b: 'Condition | None'):
+        self.comparator = comparator
+        self.a = a
+        self.b = b
+
+    def setA(self, a: Condition):
+        self.a = a
+
+    def setB(self, b: Condition):
+        self.b = b
+
+    def transpile(self) -> str:
+        return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
+
+
 class Block(Instruction):
     def __init__(self, *instructions: Instruction):
         self.instructions: list[Instruction] = [*instructions]
