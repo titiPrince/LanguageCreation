@@ -6,3 +6,12 @@ b = a - 3 + 2;
 b = a - 3 + a;
 print: b;
 print: f;
+print: 99999;
+
+
+f = a + c;
+print: f;
+
+z = 5;
+print: z;
+

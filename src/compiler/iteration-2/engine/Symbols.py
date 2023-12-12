@@ -4,7 +4,7 @@ class TokenType:
 	NUM = "NUM"
 	STR = "STR"
 	BOX = "BOX"
-	EOL = "EOL"
+	SEP = "SEP"
 
 
 class Token:
@@ -43,6 +43,7 @@ class Symbol:
 	ACOS = "{"
 	ACOE = "}"
 	EOL = ";"
+	SEP = ","
 	BOXES = "(){}"
 
 	IGNORES = " \n"
@@ -54,3 +55,5 @@ class Symbol:
 	FOR = "pour"
 	FORCOND = "quand"
 	FORSTEP = "incr"
+
+	FCT_PRINT = "print"

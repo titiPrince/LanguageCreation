@@ -215,20 +215,20 @@ def scan(start, line):
         elif currentEl.type == TokenType.ID and isIdNative(currentEl) and not nextEl.value == Symbol.CALL:
             return "Error Syntax: A native function must be follow by ':'"
 
-        # si la varible n'existe pas dans vartab et n'est pas en 1ere position
+        # si la variable n'existe pas dans vartab et n'est pas en 1ere position
         elif currentEl.type == TokenType.ID and not isIdNative(currentEl) and not isVarNameAvailable(currentEl,
                                                                                                      vartab) and isNotBegin:
 
-            return "Error Syntax: la varible '" + currentEl.value + "' n'est pas defini"
+            return "Error Syntax: la variable '" + currentEl.value + "' n'est pas defini"
 
         # si la variable est en position 1 elle doit etre suivi d'un "=" (asignation ou delcaration)
         elif currentEl.type == TokenType.ID and not isIdNative(currentEl) and nextEl.value != "=" and isBegin:
-            return "Error Syntax: la varible '" + currentEl.value + "' n'est pas suivi d'un '='"
+            return "Error Syntax: la variable '" + currentEl.value + "' n'est pas suivi d'un '='"
 
         # si la variable n'est PAS en position 1 elle DOIT etre suivi d' OP(not : ) ou  EOL)
         elif not nextEl.value == Symbol.CALL and currentEl.type == TokenType.ID and not (
                 nextEl.type == TokenType.OP or nextEl.type == TokenType.EOL) and isNotBegin:
-            return "Error Syntax: la varible '" + currentEl.value + "' est suivi d'un caractère incorect"
+            return "Error Syntax: la variable '" + currentEl.value + "' est suivi d'un caractère incorect"
 
         # si le token est un un nombre , il DOIT etre suivis d' OP(not : et =) ou de EOL
         elif isBegin and not nextEl.value == Symbol.ASSIGN and not nextEl.value == Symbol.CALL and currentEl.type == TokenType.NUM and not (

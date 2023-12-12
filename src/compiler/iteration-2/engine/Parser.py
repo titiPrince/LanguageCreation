@@ -95,11 +95,11 @@ def scan( tokens):
 
 
 		if i == 0 and (
-			currentEl.type is TokenType.OP or
-			currentEl.type is TokenType.BOX or
-			currentEl.type is TokenType.STR or
-			currentEl.type is TokenType.EOL or
-			currentEl.type is TokenType.NUM
+				currentEl.type is TokenType.OP or
+				currentEl.type is TokenType.BOX or
+				currentEl.type is TokenType.STR or
+				currentEl.type is TokenType.SEP or
+				currentEl.type is TokenType.NUM
 		):
 			return "tu fait pas d'effort dès le premier charactère"
 
@@ -139,8 +139,43 @@ def scan( tokens):
 		#
 
 
-def scanInstruction(tokens: list[Token]) -> tuple[int, Condition]:
-	pass
+def scanInstruction(tokens: list[Token]) -> tuple[int, LiteralNumber | VarReading | BinaryOperation | VarAssignation]:
+	lastParam = None
+	currentParam = None
+
+	skip = 0
+
+	for i, token in enumerate(tokens):
+		# Token detection
+		match token.type:
+			case TokenType.ID:
+				currentParam = VarReading(token.value)
+
+			case TokenType.OP:
+				if token.value == Symbol.ASSIGN:
+					currentParam = VarAssignation()
+
+			case TokenType.NUM:
+				break
+
+			case TokenType.STR:
+				break
+
+			case TokenType.BOX:
+				break
+
+			case TokenType.SEP:
+				break
+
+		# Instruction assembler
+		if lastParam is None:
+			lastParam = currentParam
+
+		elif isinstance(currentParam, VarAssignation):
+			currentParam.setName(lastParam.name)
+			lastParam = currentParam
+
+
 
 
 def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
@@ -149,7 +184,7 @@ def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
 
 	for i, token in enumerate(tokens):
 		# Token detection
-		match (token.type):
+		match token.type:
 			case TokenType.ID:
 				if token.value in (Symbol.AND, Symbol.NOT, Symbol.OR):
 					currentParam = BoolComparison(token.value)
@@ -229,42 +264,72 @@ def scanForLoop(tokens: list[Token]) -> tuple[int, ForLoop]:
 	return ptrBlock, statement
 
 
-def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
+def scanFunctionParameters(tokens: list[Token]) -> tuple[int, list[LiteralNumber | LiteralString | VarReading | BinaryOperation]]:
+	parameters = []
+	lastParam = None
+	currentParam = None
+
 	for i, token in enumerate(tokens):
-		match (token.type):
+		# Token detection
+		match token.type:
 			case TokenType.ID:
-				if token.value == Symbol.IF:
-					ptrIfStatement, ifStatementBlock = scanIfStatement(tokens[i+1:])
+				# Add here in the future, condition to verify if there is a function call
 
-				elif token.value == Symbol.FOR:
-					ptrForLoop, forLoopBlock = scanForLoop(tokens[i + 1:])
-
-			case TokenType.OP:
-				break
+				currentParam = VarReading(token.value)
 
 			case TokenType.NUM:
-				break
+				currentParam = LiteralNumber(token.value)
 
 			case TokenType.STR:
-				break
+				currentParam = LiteralString(token.value)
 
 			case TokenType.BOX:
-				break
+				if token.value == Symbol.PARE:
+					return i, parameters
 
-			case TokenType.EOL:
-				stackInstruction = []
+			case TokenType.SEP:
+				currentParam = None
+
+		# Condition assembler
+		if lastParam is None:
+			lastParam = currentParam
+
+		elif currentParam is None:
+			parameters.append(lastParam)
+			lastParam = None
+
+		elif isinstance(lastParam, (Condition, BoolComparison)):
+			lastParam.setB(currentParam)
+
+		elif isinstance(currentParam, (Condition, BoolComparison)):
+			currentParam.setA(lastParam)
+			lastParam = currentParam
+
+
+def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
+	block = Block()
+
+	for i, token in enumerate(tokens):
+		if token.value == Symbol.IF:
+			ptrIfStatement, ifStatementBlock = scanIfStatement(tokens[i + 1:])
+
+		elif token.value == Symbol.FOR:
+			ptrForLoop, forLoopBlock = scanForLoop(tokens[i + 1:])
+
+		elif token.value == Symbol.FCT_PRINT:
+			ptrFunctionParams, functionParameters = scanFunctionParameters(tokens[i + 2:]) # +2 to skip the (
+
+		elif token.value == Symbol.ACOE:
+			return i, block
+
 
 def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
-	def scanInstruction(tokens: list[Token]) -> Instruction:
-		pass
-
-
 	for i, token in enumerate(tokens):
 		if skip > 0:
 			skip = skip - 1
 			continue
 
-		match (token.type):
+		match token.type:
 			case TokenType.ID:
 				break
 
@@ -280,7 +345,7 @@ def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
 			case TokenType.BOX:
 				break
 
-			case TokenType.EOL:
+			case TokenType.SEP:
 				stackInstruction = []
 
 	return ast

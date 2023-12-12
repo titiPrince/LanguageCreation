@@ -176,9 +176,12 @@ class IfStatement(Instruction):
 
 
 class VarAssignation(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
+    def __init__(self, name: str | None = None, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
         self.name = name
         self.value = value
+
+    def setName(self, name: str):
+        self.name = name;
 
     def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value

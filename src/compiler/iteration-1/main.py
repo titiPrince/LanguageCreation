@@ -42,12 +42,12 @@ def main():
             file.write(c)
 
         os.system("gcc " + SOURCE_FILE + ".c -o " + SOURCE_FILE + ".o")
-        os.remove(SOURCE_FILE + ".c")
+        # os.remove(SOURCE_FILE + ".c")
 
         os.system("./" + SOURCE_FILE + ".o")
 
     else:
-        pass
+        print(errors)
 
 if __name__ == '__main__':
     main()
