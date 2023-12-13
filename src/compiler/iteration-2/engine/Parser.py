@@ -1,5 +1,6 @@
 from .Symbols import *
 from .Transpiler import *
+from .VarManager import *
 
 
 
@@ -94,11 +95,11 @@ def scan( tokens):
 
 
 		if i == 0 and (
-			currentEl.type is TokenType.OP or
-			currentEl.type is TokenType.BOX or
-			currentEl.type is TokenType.STR or
-			currentEl.type is TokenType.EOL or
-			currentEl.type is TokenType.NUM
+				currentEl.type is TokenType.OP or
+				currentEl.type is TokenType.BOX or
+				currentEl.type is TokenType.STR or
+				currentEl.type is TokenType.SEP or
+				currentEl.type is TokenType.NUM
 		):
 			return "tu fait pas d'effort dès le premier charactère"
 
@@ -136,105 +137,3 @@ def scan( tokens):
 		# 	isNotBegin = False
 		#
 		#
-
-
-
-
-
-
-def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
-	def scanBranch(tokens: list[Token]) -> tuple[int, list[Instruction]]:
-		return tuple()
-
-	def isVarDeclared(name: str) -> bool:
-		return name in declaredVar.keys()
-
-	def getLastStack():
-		if inCondition:
-			return stackCondition[-1] if stackCondition else None
-		return stackInstruction[-1] if stackInstruction else None
-
-	ast = AbstractSyntaxTree()
-
-	declaredVar = {}
-
-	instruction = None
-	stackInstruction = []
-
-	inCondition = False
-	stackCondition = []
-
-	skip = 0
-
-	for i, token in enumerate(tokens):
-		if skip > 0:
-			skip = skip - 1
-			continue
-
-		match (token.type):
-			case TokenType.ID:
-				if token.value in [Symbol.IF, Symbol.ELSEIF]:
-					inCondition = True
-					stackCondition = []
-
-				elif token.value is Symbol.ELSE:
-					pass
-
-				elif token.value in [Symbol.FOR, Symbol.FORCOND, Symbol.FORSTEP]:
-					pass
-
-				else:
-					if inCondition:
-						stackCondition.append(VarReading(token.value))
-
-					else:
-						if isVarDeclared(token.value):
-							instruction = VarAssignation(token.value)
-
-						else:
-							instruction = VarDeclaration(token.value)
-
-				break
-
-			case TokenType.OP:
-				if token.value is Symbol.EQUAL:
-					if inCondition:
-						pass
-
-					else:
-						continue
-
-				elif token.value in Symbol.CALCS:
-					lastStack = getLastStack()
-
-					if isinstance(lastStack, BinaryOperation):
-						lastStack.setB(BinaryOperation(token.value, lastStack.b))
-
-					else:
-						stackInstruction.append(LiteralNumber(token.value))
-
-				break
-
-			case TokenType.NUM:
-				if inCondition:
-					pass
-
-				else:
-					lastStack = getLastStack()
-
-					if isinstance(lastStack, BinaryOperation):
-						lastStack.setB(LiteralNumber(token.value))
-
-					else:
-						stackInstruction.append(LiteralNumber(token.value))
-
-			case TokenType.STR:
-				break
-
-			case TokenType.BOX:
-				break
-
-			case TokenType.EOL:
-				stackInstruction = []
-
-	return ast

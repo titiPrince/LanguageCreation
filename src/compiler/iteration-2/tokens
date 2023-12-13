@@ -24,8 +24,7 @@ TOKEN [ID]	-> a
 TOKEN [EOL]	-> ;
 TOKEN [ID]	-> si
 TOKEN [ID]	-> b
-TOKEN [OP]	-> =
-TOKEN [OP]	-> =
+TOKEN [OP]	-> ==
 TOKEN [STR]	-> ba
 TOKEN [BOX]	-> {
 TOKEN [ID]	-> a
@@ -51,13 +50,11 @@ TOKEN [EOL]	-> ;
 TOKEN [BOX]	-> }
 TOKEN [ID]	-> etsi
 TOKEN [ID]	-> a
-TOKEN [OP]	-> =
-TOKEN [OP]	-> =
+TOKEN [OP]	-> ==
 TOKEN [STR]	-> ba
 TOKEN [ID]	-> and
 TOKEN [NUM]	-> 1
-TOKEN [OP]	-> !
-TOKEN [OP]	-> =
+TOKEN [OP]	-> !=
 TOKEN [NUM]	-> 1
 TOKEN [ID]	-> or
 TOKEN [NUM]	-> 1

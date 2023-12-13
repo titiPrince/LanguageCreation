@@ -88,8 +88,8 @@ class StringConcat(Instruction):
 class Condition(Instruction):
     def __init__(self,
                  comparator: str,
-                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None',
-                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None'):
+                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None,
+                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None):
         self.comparator = comparator
         self.a = a
         self.b = b
@@ -98,6 +98,25 @@ class Condition(Instruction):
         self.a = a
 
     def setB(self, b):
+        self.b = b
+
+    def transpile(self) -> str:
+        return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
+
+
+class BoolComparison(Instruction):
+    def __init__(self,
+                 comparator: str,
+                 a: 'Condition | None',
+                 b: 'Condition | None'):
+        self.comparator = comparator
+        self.a = a
+        self.b = b
+
+    def setA(self, a: Condition):
+        self.a = a
+
+    def setB(self, b: Condition):
         self.b = b
 
     def transpile(self) -> str:
@@ -157,9 +176,12 @@ class IfStatement(Instruction):
 
 
 class VarAssignation(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
+    def __init__(self, name: str | None = None, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
         self.name = name
         self.value = value
+
+    def setName(self, name: str):
+        self.name = name;
 
     def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value
