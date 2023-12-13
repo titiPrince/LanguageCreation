@@ -283,6 +283,16 @@ def scanFunctionParameters(tokens: list[Token]) -> tuple[int, list[LiteralNumber
 			case TokenType.STR:
 				currentParam = LiteralString(token.value)
 
+			case TokenType.OP:
+				if token.value in Symbols.CONDITIONS:
+					currentParam = Condition(token.value)
+
+				elif token.value in Symbol.CALCS:
+					currentParam = BinaryOperation(token.value)
+
+				elif token.value in Symbols.GATES:
+					currentParam = BoolComparison(token.value)
+
 			case TokenType.BOX:
 				if token.value == Symbol.PARE:
 					return i, parameters

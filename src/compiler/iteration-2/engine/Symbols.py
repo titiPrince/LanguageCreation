@@ -1,59 +1,66 @@
 class TokenType:
-	ID = "ID"
-	OP = "OP"
-	NUM = "NUM"
-	STR = "STR"
-	BOX = "BOX"
-	SEP = "SEP"
+    ID = "ID"
+    OP = "OP"
+    NUM = "NUM"
+    STR = "STR"
+    BOX = "BOX"
+    SEP = "SEP"
 
 
 class Token:
-	def __init__(self, _type, _value):
-		self.type = _type
-		self.value = _value
+    def __init__(self, _type, _value):
+        self.type = _type
+        self.value = _value
 
-	def __str__(self):
-		return "TOKEN [" + str(self.type) + "]	-> " + str(self.value)
+    def __str__(self):
+        return "TOKEN [" + str(self.type) + "]	-> " + str(self.value)
 
 
 class Symbol:
-	ASSIGN = "="
+    ASSIGN = "="
 
-	EQUAL = "=="
-	NEQUAL = "!="
-	GREATER = ">"
-	GREQUAL = ">="
-	LOWER = "<"
-	LOEQUAL= "<="
+    EQUAL = "=="
+    NEQUAL = "!="
+    GREATER = ">"
+    GREQUAL = ">="
+    LOWER = "<"
+    LOEQUAL = "<="
 
-	AND = "et"
-	OR = "ou"
-	NOT = "non"
+    AND = "et"
+    OR = "ou"
+    NOT = "non"
 
-	MUL = "*"
-	ADD = "+"
-	SUB = "-"
-	DIV = "/"
-	OPERATIONS = "+-*/=><!"
-	CALCS = "+-*/"
+    MUL = "*"
+    ADD = "+"
+    SUB = "-"
+    DIV = "/"
+    OPERATIONS = "+-*/=><!"
+    CALCS = "+-*/"
 
-	QUOT = '"'
-	PARS = "("
-	PARE = ")"
-	ACOS = "{"
-	ACOE = "}"
-	EOL = ";"
-	SEP = ","
-	BOXES = "(){}"
+    QUOT = '"'
+    PARS = "("
+    PARE = ")"
+    ACOS = "{"
+    ACOE = "}"
+    EOL = ";"
+    SEP = ","
+    BOXES = "(){}"
 
-	IGNORES = " \n"
+    IGNORES = " \n"
 
-	IF = "si"
-	ELSEIF = "etsi"
-	ELSE = "sinon"
+    IF = "si"
+    ELSEIF = "etsi"
+    ELSE = "sinon"
 
-	FOR = "pour"
-	FORCOND = "quand"
-	FORSTEP = "incr"
+    FOR = "pour"
+    FORCOND = "quand"
+    FORSTEP = "incr"
 
-	FCT_PRINT = "print"
+    FCT_PRINT = "print"
+
+
+class Symbols:
+    CONDITIONS = (Symbol.EQUAL, Symbol.NEQUAL, Symbol.GREATER, Symbol.GREQUAL, Symbol.LOWER, Symbol.LOEQUAL)
+    CALCULATIONS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV)
+    OPERATORS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV, Symbol.ASSIGN, Symbol.GREATER, Symbol.LOWER)
+    GATES = (Symbol.AND, Symbol.OR)

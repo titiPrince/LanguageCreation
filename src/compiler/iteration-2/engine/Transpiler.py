@@ -88,8 +88,8 @@ class StringConcat(Instruction):
 class Condition(Instruction):
     def __init__(self,
                  comparator: str,
-                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None',
-                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None'):
+                 a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None,
+                 b: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None):
         self.comparator = comparator
         self.a = a
         self.b = b
