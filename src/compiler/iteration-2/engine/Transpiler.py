@@ -107,8 +107,8 @@ class Condition(Instruction):
 class BoolComparison(Instruction):
     def __init__(self,
                  comparator: str,
-                 a: 'Condition | None',
-                 b: 'Condition | None'):
+                 a: 'Condition | None' = None,
+                 b: 'Condition | None' = None):
         self.comparator = comparator
         self.a = a
         self.b = b
