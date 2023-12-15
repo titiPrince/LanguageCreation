@@ -31,11 +31,11 @@ def lexer(script: str) -> list[Token]:
 
 	tokens = []
 
-	scriptLenght = len(script)
+	scriptLength = len(script)
 
 	i = 0
 
-	while i < scriptLenght:
+	while i < scriptLength:
 		char: str = script[i]
 
 		if char in Symbol.IGNORES:
@@ -46,13 +46,10 @@ def lexer(script: str) -> list[Token]:
 			tokens.append(Token(TokenType.OP, script[i:i+2]))
 			i += 2
 
-		elif char == Symbol.SEP:
-			tokens.append(Token(TokenType.SEP, char))
-
 		elif char in Symbol.OPERATIONS:
 			tokens.append(Token(TokenType.OP, char))
 
-		elif char == Symbol.EOL:
+		elif char in Symbols.ENDS:
 			tokens.append(Token(TokenType.SEP, char))
 
 		elif char in Symbol.BOXES:
@@ -78,7 +75,17 @@ def lexer(script: str) -> list[Token]:
 
 		i += 1
 
-	# for t in tokens:
-	# 	print(t)
-
 	return tokens
+
+
+if __name__ == "__main__":
+	sourceFile = open("../falseTest.pp", "r")
+
+	script = sourceFile.read()
+
+	sourceFile.close()
+
+	tokens = lexer(script)
+
+	for i, token in enumerate(tokens):
+		print(f"{token}")

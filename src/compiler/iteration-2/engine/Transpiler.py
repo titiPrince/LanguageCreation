@@ -85,7 +85,7 @@ class StringConcat(Instruction):
         return f"C1({self.a.transpile()},{self.b.transpile()})"
 
 
-class Condition(Instruction):
+class Comparison(Instruction):
     def __init__(self,
                  comparator: str,
                  a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None,
@@ -113,10 +113,10 @@ class BoolComparison(Instruction):
         self.a = a
         self.b = b
 
-    def setA(self, a: Condition):
+    def setA(self, a: Comparison):
         self.a = a
 
-    def setB(self, b: Condition):
+    def setB(self, b: Comparison):
         self.b = b
 
     def transpile(self) -> str:
@@ -144,7 +144,7 @@ class ElseStatement(Instruction):
 
 class ElseIfStatement(Instruction):
     def __init__(self,
-                 condition: Condition,
+                 condition: Comparison,
                  block: Block):
         self.condition = condition
         self.block = block
@@ -155,7 +155,7 @@ class ElseIfStatement(Instruction):
 
 class IfStatement(Instruction):
     def __init__(self,
-                 condition: Condition,
+                 condition: Comparison,
                  block: Block,
                  elifBranch: list[ElseIfStatement] = None,
                  elseBranch: ElseStatement = None):
@@ -195,7 +195,7 @@ class VarAssignation(Instruction):
 class ForLoop(Instruction):
     def __init__(self,
                  var: str,
-                 condition: Condition,
+                 condition: Comparison,
                  incr: LiteralNumber | VarReading | BinaryOperation | VarAssignation = None,
                  block: Block = None):
         self.var = var
@@ -257,8 +257,9 @@ class FunctionPrint(NativeFunctionCall):
 
 
 class AbstractSyntaxTree:
-    def __init__(self, *instructions: Instruction):
-        self.instructions = list(instructions)
+    def __init__(self, block: Block):
+        self.block = block
+        self.instructions = list(block.instructions)
 
     def __str__(self):
         output = '{\n    "program": [\n        '
@@ -267,6 +268,9 @@ class AbstractSyntaxTree:
             output += instruction.toString(2) + ",\n        "
 
         return output[0:-10] + "\n    ]\n}"
+
+    def setBlock(self, block: Block):
+        self.block = block
 
     def addInstruction(self, *instructions: Instruction):
         self.instructions += instructions
@@ -319,10 +323,10 @@ if __name__ == '__main__':
                                        )
                        ),
         IfStatement(
-            Condition("==",
-                      VarReading("b"),
-                      LiteralString("ba")
-                      ),
+            Comparison("==",
+                       VarReading("b"),
+                       LiteralString("ba")
+                       ),
             Block(
                 VarAssignation("a",
                                LiteralString("ab")
@@ -337,10 +341,10 @@ if __name__ == '__main__':
             )
         ),
         IfStatement(
-            Condition("!=",
-                      LiteralNumber(0),
-                      LiteralNumber(0)
-            ),
+            Comparison("!=",
+                       LiteralNumber(0),
+                       LiteralNumber(0)
+                       ),
             Block(
                 FunctionPrint(
                     LiteralString("C'est 0")
@@ -348,19 +352,19 @@ if __name__ == '__main__':
             ),
             [
                 ElseIfStatement(
-                    Condition(
+                    Comparison(
                         "==",
                         VarReading("a"),
-                        Condition(
+                        Comparison(
                             "and",
                             LiteralString("ba"),
-                            Condition(
+                            Comparison(
                                 "!=",
                                 LiteralNumber(1),
-                                Condition(
+                                Comparison(
                                     "or",
                                     LiteralNumber(1),
-                                    Condition(
+                                    Comparison(
                                         ">",
                                         LiteralNumber(1),
                                         LiteralNumber(5)
@@ -383,7 +387,7 @@ if __name__ == '__main__':
         VarDeclaration("count", LiteralNumber(0)),
         ForLoop(
             "i",
-            Condition(
+            Comparison(
                 "<",
                 VarReading("i"),
                 LiteralNumber(50)

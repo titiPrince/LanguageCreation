@@ -28,3 +28,5 @@ pour i quand i<50 incr 1 {
   print(count);
   count = count + 1;
 }
+
+a = "fin du fichier";

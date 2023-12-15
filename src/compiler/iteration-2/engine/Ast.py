@@ -3,13 +3,15 @@ from .Transpiler import *
 from .VarManager import *
 
 
-def scanInstruction(tokens: list[Token]) -> tuple[int, LiteralNumber | VarReading | BinaryOperation | VarAssignation]:
+def scanBasicInstruction(tokens: list[Token], end: str = Symbol.EOL) -> tuple[int, LiteralNumber | VarReading | BinaryOperation | VarAssignation]:
     lastParam = None
     currentParam = None
 
-    skip = 0
-
     for i, token in enumerate(tokens):
+        # Instruction's end detection
+        if token.value == end:
+            return i + 1, lastParam
+
         # Token detection
         match token.type:
             case TokenType.ID:
@@ -19,17 +21,14 @@ def scanInstruction(tokens: list[Token]) -> tuple[int, LiteralNumber | VarReadin
                 if token.value == Symbol.ASSIGN:
                     currentParam = VarAssignation()
 
+                elif token.value in Symbols.CALCULATIONS:
+                    currentParam = BinaryOperation(token.value)
+
             case TokenType.NUM:
-                break
+                currentParam = LiteralNumber(token.value)
 
             case TokenType.STR:
-                break
-
-            case TokenType.BOX:
-                break
-
-            case TokenType.SEP:
-                break
+                currentParam = LiteralString(token.value)
 
         # Instruction assembler
         if lastParam is None:
@@ -39,12 +38,29 @@ def scanInstruction(tokens: list[Token]) -> tuple[int, LiteralNumber | VarReadin
             currentParam.setName(lastParam.name)
             lastParam = currentParam
 
+        elif isinstance(currentParam, BinaryOperation):
+            if isinstance(lastParam, VarAssignation):
+                currentParam.setA(lastParam.value)
 
-def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
+            else:
+                currentParam.setA(lastParam)
+                lastParam = currentParam
+
+        elif isinstance(currentParam, (LiteralNumber, LiteralString, VarReading)):
+            if isinstance(lastParam, VarAssignation):
+                lastParam.setValue(currentParam)
+
+            else:
+                lastParam.setB(currentParam)
+
+
+def scanCondition(tokens: list[Token]) -> tuple[int, Comparison]:
+    print(">> Condition start <<")
     lastParam = None
     currentParam = None
 
     for i, token in enumerate(tokens):
+        print(token)
         # Token detection
         match token.type:
             case TokenType.ID:
@@ -59,7 +75,7 @@ def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
                     currentParam = BinaryOperation(token.value)
 
                 else:
-                    currentParam = Condition(token.value)
+                    currentParam = Comparison(token.value)
 
             case TokenType.NUM:
                 currentParam = LiteralNumber(token.value)
@@ -69,29 +85,33 @@ def scanCondition(tokens: list[Token]) -> tuple[int, Condition]:
 
             case TokenType.BOX:
                 if token.value == Symbol.ACOS:
-                    return i, lastParam
+                    print(">> Condition end <<", i)
+                    return i + 1, lastParam
 
         # Condition assembler
         if lastParam is None:
             lastParam = currentParam
 
-        elif isinstance(lastParam, (Condition, BoolComparison)):
+        elif isinstance(lastParam, (Comparison, BoolComparison)):
             lastParam.setB(currentParam)
 
-        elif isinstance(currentParam, (Condition, BoolComparison)):
+        elif isinstance(currentParam, (Comparison, BoolComparison)):
             currentParam.setA(lastParam)
             lastParam = currentParam
 
 
 def scanIfStatement(tokens: list[Token]) -> tuple[int, IfStatement]:
+    print(">> If start <<")
     # Main
     ptrCondition, condition = scanCondition(tokens)
-    ptrBlock, block = scanBlock(tokens[ptrCondition + 1:])
+    ptrBlock, block = scanBlock(tokens[ptrCondition:])
+    print(f"ptrBlock: {ptrBlock}")
 
     statement = IfStatement(condition, block)
 
-    token = tokens[ptrBlock + 1]
-    pointer = ptrBlock + 1
+    pointer = ptrCondition + ptrBlock
+    token = tokens[pointer]
+    print("WOWWWWW:", token)
 
     # Else if
     while token.value == Symbol.ELSEIF:
@@ -104,30 +124,33 @@ def scanIfStatement(tokens: list[Token]) -> tuple[int, IfStatement]:
         pointer = ptrElseIfBlock + 1
 
     # Else
-    if token == Symbol.ELSE:
+    if token.value == Symbol.ELSE:
         ptrElseBlock, elseBlock = scanBlock(tokens[pointer + 1:])
 
         statement.elseBranch = ElseStatement(elseBlock)
 
         pointer = ptrElseBlock + 1
 
+    print(">> If end <<", pointer)
     return pointer, statement
 
 
 def scanForLoop(tokens: list[Token]) -> tuple[int, ForLoop]:
+    print(">> For start <<")
     var = tokens[0].value
 
-    ptrCondition, condition = scanCondition(tokens[1:])
-    ptrIncr, incr = scanInstruction(tokens[ptrCondition + 2:])
+    ptrCondition, condition = scanCondition(tokens[2:])
+    ptrIncr, incr = scanBasicInstruction(tokens[ptrCondition + 2:])
     ptrBlock, block = scanBlock(tokens[ptrIncr + 1:])
 
     statement = ForLoop(var, condition, incr, block)
 
+    print(">> For end <<", ptrBlock)
     return ptrBlock, statement
 
 
-def scanFunctionParameters(tokens: list[Token]) -> tuple[
-    int, list[LiteralNumber | LiteralString | VarReading | BinaryOperation]]:
+def scanFunctionParameters(tokens: list[Token]) -> tuple[int, list[LiteralNumber | LiteralString | VarReading | BinaryOperation]]:
+    print(">> Function parameters start <<")
     parameters = []
     lastParam = None
     currentParam = None
@@ -148,7 +171,7 @@ def scanFunctionParameters(tokens: list[Token]) -> tuple[
 
             case TokenType.OP:
                 if token.value in Symbols.CONDITIONS:
-                    currentParam = Condition(token.value)
+                    currentParam = Comparison(token.value)
 
                 elif token.value in Symbol.CALCS:
                     currentParam = BinaryOperation(token.value)
@@ -159,7 +182,7 @@ def scanFunctionParameters(tokens: list[Token]) -> tuple[
             case TokenType.BOX:
                 if token.value == Symbol.PARE:
                     parameters.append(lastParam)
-
+                    print(">> Function parameters end <<", i)
                     return i, parameters
 
             case TokenType.SEP:
@@ -173,23 +196,25 @@ def scanFunctionParameters(tokens: list[Token]) -> tuple[
             parameters.append(lastParam)
             lastParam = None
 
-        elif isinstance(currentParam, (Condition, BinaryOperation, BoolComparison)):
+        elif isinstance(currentParam, (Comparison, BinaryOperation, BoolComparison)):
             currentParam.setA(lastParam)
             lastParam = currentParam
 
-        elif isinstance(lastParam, (Condition, BinaryOperation, BoolComparison)):
+        elif isinstance(lastParam, (Comparison, BinaryOperation, BoolComparison)):
             lastParam.setB(currentParam)
 
 
 def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
+    print(">> Block start <<")
     block = Block()
 
     skip = 0
 
     for i, token in enumerate(tokens):
-        if skip:
-            skip -= 1
+        if skip > i:
             continue
+
+        print(token)
 
         if token.value == Symbol.IF:
             skip, instruction = scanIfStatement(tokens[i + 1:])
@@ -201,32 +226,22 @@ def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
             skip, instruction = scanFunctionParameters(tokens[i + 2:])  # +2 to skip the (
 
         elif token.value == Symbol.ACOE:
-            return i, block
+            print(">> Block end <<", i)
+            return i + 1, block
 
+        else:
+            skip, instruction = scanBasicInstruction(tokens[i:])
+            print(f"Start: {i}, Skip: {skip}, End: {i + skip}\n")
+
+        skip += i
         block.add(instruction)
 
+    return len(tokens) - 1, block
 
-def getAbstractTree(tokens: list[Token]) -> AbstractSyntaxTree:
-    ast = AbstractSyntaxTree()
 
-    for i, token in enumerate(tokens):
-        match token.type:
-            case TokenType.ID:
-                break
+def getAbstractSyntaxTree(tokens: list[Token]) -> AbstractSyntaxTree:
+    end, mainBlock = scanBlock(tokens)
 
-            case TokenType.OP:
-                break
-
-            case TokenType.NUM:
-                break
-
-            case TokenType.STR:
-                break
-
-            case TokenType.BOX:
-                break
-
-            case TokenType.SEP:
-                stackInstruction = []
+    ast = AbstractSyntaxTree(mainBlock)
 
     return ast

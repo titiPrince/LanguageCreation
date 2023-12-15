@@ -8,12 +8,17 @@ class TokenType:
 
 
 class Token:
+    count = 0
+
     def __init__(self, _type, _value):
-        self.type = _type
-        self.value = _value
+        self.id: int = Token.count
+        self.type: str = _type
+        self.value: str | int = _value
+
+        Token.count += 1
 
     def __str__(self):
-        return "TOKEN [" + str(self.type) + "]	-> " + str(self.value)
+        return f"{self.id:03d} - T{f'[{self.type}]': <5} - {str(self.value)}"
 
 
 class Symbol:
@@ -64,3 +69,4 @@ class Symbols:
     CALCULATIONS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV)
     OPERATORS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV, Symbol.ASSIGN, Symbol.GREATER, Symbol.LOWER)
     GATES = (Symbol.AND, Symbol.OR)
+    ENDS = (Symbol.SEP, Symbol.EOL)
