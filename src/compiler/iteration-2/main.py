@@ -36,11 +36,11 @@ if __name__ == '__main__':
 
     print(ast)
 
-    # transpiled = ast.transpile()
+    transpiled = ast.transpile()
 
-    # print("\n\n\n\n")
+    print("\n\n\n\n")
 
-    # print(transpiled)
+    print(transpiled)
     # errors = Parser.scan(tokens)
     # print(errors)
     #

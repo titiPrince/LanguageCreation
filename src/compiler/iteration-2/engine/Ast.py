@@ -42,6 +42,7 @@ def scanBasicInstruction(tokens: list[Token], end: str = Symbol.EOL) -> tuple[in
         elif isinstance(currentParam, BinaryOperation):
             if isinstance(lastParam, VarAssignation):
                 currentParam.setA(lastParam.value)
+                lastParam.setValue(currentParam)
 
             else:
                 currentParam.setA(lastParam)
@@ -49,8 +50,11 @@ def scanBasicInstruction(tokens: list[Token], end: str = Symbol.EOL) -> tuple[in
 
         elif isinstance(currentParam, (LiteralNumber, LiteralString, VarReading)):
             if isinstance(lastParam, VarAssignation):
-                lastParam.setValue(currentParam)
+                if lastParam.value is None:
+                    lastParam.setValue(currentParam)
 
+                elif isinstance(lastParam.value, BinaryOperation):
+                    lastParam.value.setB(currentParam)
             else:
                 lastParam.setB(currentParam)
 
