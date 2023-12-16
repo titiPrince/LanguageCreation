@@ -8,6 +8,7 @@ def scanBasicInstruction(tokens: list[Token], end: str = Symbol.EOL) -> tuple[in
     currentParam = None
 
     for i, token in enumerate(tokens):
+        print(token)
         # Instruction's end detection
         if token.value == end:
             return i + 1, lastParam
@@ -54,12 +55,16 @@ def scanBasicInstruction(tokens: list[Token], end: str = Symbol.EOL) -> tuple[in
                 lastParam.setB(currentParam)
 
 
-def scanCondition(tokens: list[Token]) -> tuple[int, Comparison]:
+def scanCondition(tokens: list[Token], end: str = Symbol.ACOS) -> tuple[int, Comparison]:
     print(">> Condition start <<")
     lastParam = None
     currentParam = None
 
     for i, token in enumerate(tokens):
+        if token.value == end:
+            print(">> Condition end <<", i)
+            return i + 1, lastParam
+
         print(token)
         # Token detection
         match token.type:
@@ -82,11 +87,6 @@ def scanCondition(tokens: list[Token]) -> tuple[int, Comparison]:
 
             case TokenType.STR:
                 currentParam = LiteralString(token.value)
-
-            case TokenType.BOX:
-                if token.value == Symbol.ACOS:
-                    print(">> Condition end <<", i)
-                    return i + 1, lastParam
 
         # Condition assembler
         if lastParam is None:
@@ -111,25 +111,28 @@ def scanIfStatement(tokens: list[Token]) -> tuple[int, IfStatement]:
 
     pointer = ptrCondition + ptrBlock
     token = tokens[pointer]
-    print("WOWWWWW:", token)
 
     # Else if
     while token.value == Symbol.ELSEIF:
         ptrElseIfCondition, elseIfCondition = scanCondition(tokens[pointer + 1:])
-        ptrElseIfBlock, elseIfBlock = scanBlock(tokens[ptrElseIfCondition + 1:])
+
+        pointer += ptrElseIfCondition + 1
+        ptrElseIfBlock, elseIfBlock = scanBlock(tokens[pointer:])
+
+        pointer += ptrElseIfBlock
 
         statement.addElifBranch(ElseIfStatement(elseIfCondition, elseIfBlock))
 
-        token = tokens[ptrElseIfBlock + 1]
-        pointer = ptrElseIfBlock + 1
+        token = tokens[pointer]
+        print("ICI NEXT", token)
 
     # Else
     if token.value == Symbol.ELSE:
-        ptrElseBlock, elseBlock = scanBlock(tokens[pointer + 1:])
+        ptrElseBlock, elseBlock = scanBlock(tokens[pointer + 2:])
 
         statement.elseBranch = ElseStatement(elseBlock)
 
-        pointer = ptrElseBlock + 1
+        pointer += ptrElseBlock + 2
 
     print(">> If end <<", pointer)
     return pointer, statement
@@ -139,14 +142,14 @@ def scanForLoop(tokens: list[Token]) -> tuple[int, ForLoop]:
     print(">> For start <<")
     var = tokens[0].value
 
-    ptrCondition, condition = scanCondition(tokens[2:])
-    ptrIncr, incr = scanBasicInstruction(tokens[ptrCondition + 2:])
-    ptrBlock, block = scanBlock(tokens[ptrIncr + 1:])
+    ptrCondition, condition = scanCondition(tokens[2:], Symbol.FORSTEP)
+    ptrIncr, incr = scanBasicInstruction(tokens[ptrCondition + 2:], Symbol.ACOS)
+    ptrBlock, block = scanBlock(tokens[ptrCondition + 2 + ptrIncr:])
 
     statement = ForLoop(var, condition, incr, block)
 
     print(">> For end <<", ptrBlock)
-    return ptrBlock, statement
+    return ptrCondition + 2 + ptrIncr + ptrBlock, statement
 
 
 def scanFunctionParameters(tokens: list[Token]) -> tuple[int, list[LiteralNumber | LiteralString | VarReading | BinaryOperation]]:
@@ -183,7 +186,7 @@ def scanFunctionParameters(tokens: list[Token]) -> tuple[int, list[LiteralNumber
                 if token.value == Symbol.PARE:
                     parameters.append(lastParam)
                     print(">> Function parameters end <<", i)
-                    return i, parameters
+                    return i + 2, parameters
 
             case TokenType.SEP:
                 currentParam = None
@@ -218,12 +221,16 @@ def scanBlock(tokens: list[Token]) -> tuple[int, Block]:
 
         if token.value == Symbol.IF:
             skip, instruction = scanIfStatement(tokens[i + 1:])
+            skip += 1
 
         elif token.value == Symbol.FOR:
             skip, instruction = scanForLoop(tokens[i + 1:])
+            skip += 1
 
         elif token.value == Symbol.FCT_PRINT:
-            skip, instruction = scanFunctionParameters(tokens[i + 2:])  # +2 to skip the (
+            skip, parameters = scanFunctionParameters(tokens[i + 2:])  # +2 to skip the (
+            instruction = FunctionPrint(parameters)
+            skip += 2
 
         elif token.value == Symbol.ACOE:
             print(">> Block end <<", i)

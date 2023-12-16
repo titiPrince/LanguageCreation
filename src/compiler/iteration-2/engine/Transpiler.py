@@ -14,6 +14,9 @@ class Instruction(ABC):
             if isinstance(value, Instruction):
                 svalue = f"{value.toString(offset + 1)}"
 
+            elif isinstance(value, list):
+                svalue = f"[{newline+inner*2}{f',{newline+inner*2}'.join([i.toString(offset+2)for i in value])}{newline+inner}]"
+
             output += inner + f'"{key}": {svalue}' + newline
 
         output += "}"
@@ -124,11 +127,11 @@ class BoolComparison(Instruction):
 
 
 class Block(Instruction):
-    def __init__(self, *instructions: Instruction):
-        self.instructions: list[Instruction] = [*instructions]
+    def __init__(self):
+        self.instructions: list[Instruction] = []
 
-    def add(self, *instructions: Instruction):
-        self.instructions += [*instructions]
+    def add(self, instruction: Instruction):
+        self.instructions.append(instruction)
 
     def transpile(self) -> str:
         return "".join([i.transpile() for i in self.instructions])
@@ -157,15 +160,15 @@ class IfStatement(Instruction):
     def __init__(self,
                  condition: Comparison,
                  block: Block,
-                 elifBranch: list[ElseIfStatement] = None,
+                 elifBranch: list[ElseIfStatement] = [],
                  elseBranch: ElseStatement = None):
         self.condition = condition
         self.block = block
         self.elifBranch = elifBranch
         self.elseBranch = elseBranch
 
-    def addElifBranch(self, *branch):
-        self.elifBranch += [*branch]
+    def addElifBranch(self, branch):
+        self.elifBranch.append(branch)
 
     def setElseBranch(self, branch):
         self.elseBranch = branch
@@ -230,7 +233,7 @@ class VarDeclaration(Instruction):
 
 
 class NativeFunctionCall(Instruction):
-    def __init__(self, name: str, *parameters: LiteralNumber | VarReading | BinaryOperation):
+    def __init__(self, name: str, parameters: list[LiteralNumber | VarReading | BinaryOperation]):
         self.name = name
         self.parameters = parameters
 
@@ -244,8 +247,8 @@ class NativeFunctionCall(Instruction):
 
 
 class FunctionPrint(NativeFunctionCall):
-    def __init__(self, *parameters: LiteralNumber | LiteralString | VarReading | BinaryOperation):
-        super().__init__("printf", *parameters)
+    def __init__(self, parameters: list[LiteralNumber | LiteralString | VarReading | BinaryOperation]):
+        super().__init__("printf", parameters)
 
     def transpile(self) -> str:
         sparams = ""
