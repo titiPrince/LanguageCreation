@@ -2,8 +2,9 @@ import sys
 import os
 
 from engine.Lexer import *
-from engine import Parser
+# from engine import Parser
 from engine.Transpiler import *
+from engine.Ast import getAbstractSyntaxTree
 
 
 if __name__ == '__main__':
@@ -31,9 +32,17 @@ if __name__ == '__main__':
     sourceFile.close()
 
     tokens = lexer(script)
-    ast = Parser.getAbstractTree(tokens)
-    errors = Parser.scan(tokens)
-    print(errors)
+    ast = getAbstractSyntaxTree(tokens)
+
+    print(ast)
+
+    transpiled = ast.transpile()
+
+    print("\n\n\n\n")
+
+    print(transpiled)
+    # errors = Parser.scan(tokens)
+    # print(errors)
     #
     # if not errors:
     #     ast = Parser.getAbstractTree(tokens)

@@ -1,104 +1,116 @@
-TOKEN [ID]	-> cha1ne
-TOKEN [OP]	-> =
-TOKEN [STR]	-> Ceci est une chaine de caractere
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> autrechaine
-TOKEN [OP]	-> =
-TOKEN [STR]	-> un exemple
-TOKEN [OP]	-> +
-TOKEN [ID]	-> chaine
-TOKEN [OP]	-> +
-TOKEN [STR]	-> test
-TOKEN [OP]	-> +
-TOKEN [STR]	->  waw
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> a
-TOKEN [OP]	-> =
-TOKEN [STR]	-> a
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> b
-TOKEN [OP]	-> =
-TOKEN [STR]	-> b
-TOKEN [OP]	-> +
-TOKEN [ID]	-> a
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> si
-TOKEN [ID]	-> b
-TOKEN [OP]	-> ==
-TOKEN [STR]	-> ba
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> a
-TOKEN [OP]	-> =
-TOKEN [STR]	-> ab
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
-TOKEN [ID]	-> sinon
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> a
-TOKEN [OP]	-> =
-TOKEN [STR]	-> aba
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
-TOKEN [ID]	-> si
-TOKEN [NUM]	-> 0
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> print
-TOKEN [BOX]	-> (
-TOKEN [STR]	-> c'est 0
-TOKEN [BOX]	-> )
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
-TOKEN [ID]	-> etsi
-TOKEN [ID]	-> a
-TOKEN [OP]	-> ==
-TOKEN [STR]	-> ba
-TOKEN [ID]	-> and
-TOKEN [NUM]	-> 1
-TOKEN [OP]	-> !=
-TOKEN [NUM]	-> 1
-TOKEN [ID]	-> or
-TOKEN [NUM]	-> 1
-TOKEN [OP]	-> >
-TOKEN [NUM]	-> 5
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> print
-TOKEN [BOX]	-> (
-TOKEN [STR]	-> c'est 1
-TOKEN [BOX]	-> )
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
-TOKEN [ID]	-> sinon
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> print
-TOKEN [BOX]	-> (
-TOKEN [STR]	-> c'est rien
-TOKEN [BOX]	-> )
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
-TOKEN [ID]	-> count
-TOKEN [OP]	-> =
-TOKEN [NUM]	-> 0
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> pour
-TOKEN [ID]	-> i
-TOKEN [ID]	-> quand
-TOKEN [ID]	-> i
-TOKEN [OP]	-> <
-TOKEN [NUM]	-> 50
-TOKEN [ID]	-> incr
-TOKEN [ID]	-> i
-TOKEN [OP]	-> +
-TOKEN [OP]	-> +
-TOKEN [BOX]	-> {
-TOKEN [ID]	-> print
-TOKEN [BOX]	-> (
-TOKEN [ID]	-> count
-TOKEN [BOX]	-> )
-TOKEN [EOL]	-> ;
-TOKEN [ID]	-> count
-TOKEN [OP]	-> =
-TOKEN [ID]	-> count
-TOKEN [OP]	-> +
-TOKEN [NUM]	-> 1
-TOKEN [EOL]	-> ;
-TOKEN [BOX]	-> }
+000 - T[ID]  - chaine
+001 - T[OP]  - =
+002 - T[STR] - Ceci est une chaine de caractere
+003 - T[SEP] - ;
+004 - T[ID]  - autrechaine
+005 - T[OP]  - =
+006 - T[STR] - un exemple
+007 - T[OP]  - +
+008 - T[ID]  - chaine
+009 - T[OP]  - +
+010 - T[STR] - test
+011 - T[OP]  - +
+012 - T[STR] -  waw
+013 - T[SEP] - ;
+014 - T[ID]  - a
+015 - T[OP]  - =
+016 - T[STR] - a
+017 - T[SEP] - ;
+018 - T[ID]  - b
+019 - T[OP]  - =
+020 - T[STR] - b
+021 - T[OP]  - +
+022 - T[ID]  - a
+023 - T[OP]  - +
+024 - T[STR] - test
+025 - T[SEP] - ;
+026 - T[ID]  - c
+027 - T[OP]  - =
+028 - T[NUM] - 1
+029 - T[OP]  - +
+030 - T[NUM] - 2
+031 - T[OP]  - *
+032 - T[NUM] - 5
+033 - T[SEP] - ;
+034 - T[ID]  - si
+035 - T[ID]  - b
+036 - T[OP]  - ==
+037 - T[STR] - ba
+038 - T[BOX] - {
+039 - T[ID]  - a
+040 - T[OP]  - =
+041 - T[STR] - ab
+042 - T[SEP] - ;
+043 - T[BOX] - }
+044 - T[ID]  - sinon
+045 - T[BOX] - {
+046 - T[ID]  - a
+047 - T[OP]  - =
+048 - T[STR] - aba
+049 - T[SEP] - ;
+050 - T[BOX] - }
+051 - T[ID]  - si
+052 - T[NUM] - 0
+053 - T[BOX] - {
+054 - T[ID]  - print
+055 - T[BOX] - (
+056 - T[STR] - c'est 0
+057 - T[BOX] - )
+058 - T[SEP] - ;
+059 - T[BOX] - }
+060 - T[ID]  - etsi
+061 - T[ID]  - a
+062 - T[OP]  - ==
+063 - T[STR] - ba
+064 - T[ID]  - et
+065 - T[NUM] - 1
+066 - T[OP]  - !=
+067 - T[NUM] - 1
+068 - T[ID]  - ou
+069 - T[NUM] - 1
+070 - T[OP]  - >
+071 - T[NUM] - 5
+072 - T[BOX] - {
+073 - T[ID]  - print
+074 - T[BOX] - (
+075 - T[STR] - c'est 1
+076 - T[BOX] - )
+077 - T[SEP] - ;
+078 - T[BOX] - }
+079 - T[ID]  - sinon
+080 - T[BOX] - {
+081 - T[ID]  - print
+082 - T[BOX] - (
+083 - T[STR] - c'est rien
+084 - T[BOX] - )
+085 - T[SEP] - ;
+086 - T[BOX] - }
+087 - T[ID]  - count
+088 - T[OP]  - =
+089 - T[NUM] - 0
+090 - T[SEP] - ;
+091 - T[ID]  - pour
+092 - T[ID]  - i
+093 - T[ID]  - quand
+094 - T[ID]  - i
+095 - T[OP]  - <
+096 - T[NUM] - 50
+097 - T[ID]  - incr
+098 - T[NUM] - 1
+099 - T[BOX] - {
+100 - T[ID]  - print
+101 - T[BOX] - (
+102 - T[ID]  - count
+103 - T[BOX] - )
+104 - T[SEP] - ;
+105 - T[ID]  - count
+106 - T[OP]  - =
+107 - T[ID]  - count
+108 - T[OP]  - +
+109 - T[NUM] - 1
+110 - T[SEP] - ;
+111 - T[BOX] - }
+112 - T[ID]  - a
+113 - T[OP]  - =
+114 - T[STR] - fin du fichier
+115 - T[SEP] - ;

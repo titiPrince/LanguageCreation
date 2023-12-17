@@ -14,6 +14,9 @@ class Instruction(ABC):
             if isinstance(value, Instruction):
                 svalue = f"{value.toString(offset + 1)}"
 
+            elif isinstance(value, list):
+                svalue = f"[{newline+inner*2}{f',{newline+inner*2}'.join([i.toString(offset+2)for i in value])}{newline+inner}]"
+
             output += inner + f'"{key}": {svalue}' + newline
 
         output += "}"
@@ -85,7 +88,7 @@ class StringConcat(Instruction):
         return f"C1({self.a.transpile()},{self.b.transpile()})"
 
 
-class Condition(Instruction):
+class Comparison(Instruction):
     def __init__(self,
                  comparator: str,
                  a: 'LiteralNumber | LiteralString | VarReading | BinaryOperation | Condition | None' = None,
@@ -107,16 +110,16 @@ class Condition(Instruction):
 class BoolComparison(Instruction):
     def __init__(self,
                  comparator: str,
-                 a: 'Condition | None',
-                 b: 'Condition | None'):
+                 a: 'Condition | None' = None,
+                 b: 'Condition | None' = None):
         self.comparator = comparator
         self.a = a
         self.b = b
 
-    def setA(self, a: Condition):
+    def setA(self, a: Comparison):
         self.a = a
 
-    def setB(self, b: Condition):
+    def setB(self, b: Comparison):
         self.b = b
 
     def transpile(self) -> str:
@@ -124,11 +127,11 @@ class BoolComparison(Instruction):
 
 
 class Block(Instruction):
-    def __init__(self, *instructions: Instruction):
-        self.instructions: list[Instruction] = [*instructions]
+    def __init__(self):
+        self.instructions: list[Instruction] = []
 
-    def add(self, *instructions: Instruction):
-        self.instructions += [*instructions]
+    def add(self, instruction: Instruction):
+        self.instructions.append(instruction)
 
     def transpile(self) -> str:
         return "".join([i.transpile() for i in self.instructions])
@@ -144,7 +147,7 @@ class ElseStatement(Instruction):
 
 class ElseIfStatement(Instruction):
     def __init__(self,
-                 condition: Condition,
+                 condition: Comparison,
                  block: Block):
         self.condition = condition
         self.block = block
@@ -155,17 +158,17 @@ class ElseIfStatement(Instruction):
 
 class IfStatement(Instruction):
     def __init__(self,
-                 condition: Condition,
+                 condition: Comparison,
                  block: Block,
-                 elifBranch: list[ElseIfStatement] = None,
+                 elifBranch: list[ElseIfStatement] = [],
                  elseBranch: ElseStatement = None):
         self.condition = condition
         self.block = block
         self.elifBranch = elifBranch
         self.elseBranch = elseBranch
 
-    def addElifBranch(self, *branch):
-        self.elifBranch += [*branch]
+    def addElifBranch(self, branch):
+        self.elifBranch.append(branch)
 
     def setElseBranch(self, branch):
         self.elseBranch = branch
@@ -195,7 +198,7 @@ class VarAssignation(Instruction):
 class ForLoop(Instruction):
     def __init__(self,
                  var: str,
-                 condition: Condition,
+                 condition: Comparison,
                  incr: LiteralNumber | VarReading | BinaryOperation | VarAssignation = None,
                  block: Block = None):
         self.var = var
@@ -230,7 +233,7 @@ class VarDeclaration(Instruction):
 
 
 class NativeFunctionCall(Instruction):
-    def __init__(self, name: str, *parameters: LiteralNumber | VarReading | BinaryOperation):
+    def __init__(self, name: str, parameters: list[LiteralNumber | VarReading | BinaryOperation]):
         self.name = name
         self.parameters = parameters
 
@@ -244,8 +247,8 @@ class NativeFunctionCall(Instruction):
 
 
 class FunctionPrint(NativeFunctionCall):
-    def __init__(self, *parameters: LiteralNumber | LiteralString | VarReading | BinaryOperation):
-        super().__init__("printf", *parameters)
+    def __init__(self, parameters: list[LiteralNumber | LiteralString | VarReading | BinaryOperation]):
+        super().__init__("printf", parameters)
 
     def transpile(self) -> str:
         sparams = ""
@@ -257,8 +260,9 @@ class FunctionPrint(NativeFunctionCall):
 
 
 class AbstractSyntaxTree:
-    def __init__(self, *instructions: Instruction):
-        self.instructions = list(instructions)
+    def __init__(self, block: Block):
+        self.block = block
+        self.instructions = list(block.instructions)
 
     def __str__(self):
         output = '{\n    "program": [\n        '
@@ -267,6 +271,9 @@ class AbstractSyntaxTree:
             output += instruction.toString(2) + ",\n        "
 
         return output[0:-10] + "\n    ]\n}"
+
+    def setBlock(self, block: Block):
+        self.block = block
 
     def addInstruction(self, *instructions: Instruction):
         self.instructions += instructions
@@ -319,10 +326,10 @@ if __name__ == '__main__':
                                        )
                        ),
         IfStatement(
-            Condition("==",
-                      VarReading("b"),
-                      LiteralString("ba")
-                      ),
+            Comparison("==",
+                       VarReading("b"),
+                       LiteralString("ba")
+                       ),
             Block(
                 VarAssignation("a",
                                LiteralString("ab")
@@ -337,10 +344,10 @@ if __name__ == '__main__':
             )
         ),
         IfStatement(
-            Condition("!=",
-                      LiteralNumber(0),
-                      LiteralNumber(0)
-            ),
+            Comparison("!=",
+                       LiteralNumber(0),
+                       LiteralNumber(0)
+                       ),
             Block(
                 FunctionPrint(
                     LiteralString("C'est 0")
@@ -348,19 +355,19 @@ if __name__ == '__main__':
             ),
             [
                 ElseIfStatement(
-                    Condition(
+                    Comparison(
                         "==",
                         VarReading("a"),
-                        Condition(
+                        Comparison(
                             "and",
                             LiteralString("ba"),
-                            Condition(
+                            Comparison(
                                 "!=",
                                 LiteralNumber(1),
-                                Condition(
+                                Comparison(
                                     "or",
                                     LiteralNumber(1),
-                                    Condition(
+                                    Comparison(
                                         ">",
                                         LiteralNumber(1),
                                         LiteralNumber(5)
@@ -383,7 +390,7 @@ if __name__ == '__main__':
         VarDeclaration("count", LiteralNumber(0)),
         ForLoop(
             "i",
-            Condition(
+            Comparison(
                 "<",
                 VarReading("i"),
                 LiteralNumber(50)
