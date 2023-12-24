@@ -1,12 +1,21 @@
 class VarType:
 	INTEGER = 0
 	STRING = 1
+	BOOLEAN = 2
 
 
 class Variable:
 	def __init__(self, _name: str, _shortname: str, _type: int | None):
 		self.name = _name
 		self.short = _shortname
+		self.type = _type
+
+	def __str__(self):
+		_type = "null" if self.type is None else ("int", "str", "bool")[self.type]
+
+		return f"{self.name} -> {self.short}:{_type}"
+
+	def setType(self, _type: int | None):
 		self.type = _type
 
 

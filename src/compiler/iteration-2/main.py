@@ -4,7 +4,7 @@ import os
 from engine.Lexer import *
 # from engine import Parser
 from engine.Transpiler import *
-from engine.Ast import getAbstractSyntaxTree
+from engine.Ast import Ast
 
 
 if __name__ == '__main__':
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     sourceFile.close()
 
     tokens = lexer(script)
-    ast = getAbstractSyntaxTree(tokens)
+    ast = Ast(tokens)
 
     print(ast)
 

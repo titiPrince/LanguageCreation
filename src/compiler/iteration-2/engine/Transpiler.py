@@ -184,7 +184,7 @@ class VarAssignation(Instruction):
         self.value = value
 
     def setName(self, name: str):
-        self.name = name;
+        self.name = name
 
     def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value
@@ -221,8 +221,14 @@ class ForLoop(Instruction):
 
 
 class VarDeclaration(Instruction):
-    def __init__(self, name: str, value: LiteralNumber | LiteralString | StringConcat | VarReading | BinaryOperation = None):
+    def __init__(self, name: str = None, value: LiteralNumber | LiteralString | StringConcat | VarReading | BinaryOperation = None):
         self.name = name
+        self.value = value
+
+    def setName(self, name: str):
+        self.name = name
+
+    def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value
 
     def transpile(self) -> str:
@@ -260,8 +266,8 @@ class FunctionPrint(NativeFunctionCall):
 
 
 class AbstractSyntaxTree:
-    def __init__(self, block: Block):
-        self.block = block
+    def __init__(self, block: Block | None = None):
+        self.block: Block | None = block
         self.instructions = list(block.instructions)
 
     def __str__(self):
@@ -273,9 +279,11 @@ class AbstractSyntaxTree:
         return output[0:-10] + "\n    ]\n}"
 
     def setBlock(self, block: Block):
-        self.block = block
+        self.block: Block | None = block
+        self.instructions = list(block.instructions)
 
     def addInstruction(self, *instructions: Instruction):
+        print("INSTRUCTION", instructions)
         self.instructions += instructions
 
     def transpile(self) -> str:
