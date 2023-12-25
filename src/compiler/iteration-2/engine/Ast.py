@@ -138,7 +138,12 @@ class Ast(AbstractSyntaxTree):
                 lastParam = currentParam
 
             elif isinstance(lastParam, (Comparison, BoolComparison)):
-                lastParam.setB(currentParam)
+                if isinstance(currentParam, (Comparison, BoolComparison)):
+                    currentParam.setA(lastParam)
+                    lastParam = currentParam
+
+                else:
+                    lastParam.setB(currentParam)
 
             elif isinstance(currentParam, (Comparison, BoolComparison)):
                 currentParam.setA(lastParam)

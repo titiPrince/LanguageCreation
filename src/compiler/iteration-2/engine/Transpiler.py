@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from .VarManager import *
+from .Symbols import *
 
 
 class Instruction(ABC):
@@ -123,7 +124,9 @@ class BoolComparison(Instruction):
         self.b = b
 
     def transpile(self) -> str:
-        return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
+        comparator = '&&' if self.comparator == Symbol.AND else '||'
+
+        return f"{self.a.transpile()}{comparator}{self.b.transpile()}"
 
 
 class Block(Instruction):
