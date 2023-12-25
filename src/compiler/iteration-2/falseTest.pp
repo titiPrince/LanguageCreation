@@ -24,8 +24,8 @@ sinon {
 
 count = 0;
 
-pour i quand i<50 incr 1 {
-  print(count);
+pour c quand c<50 incr 4 {
+  print(c);
   count = count + 1;
 }
 

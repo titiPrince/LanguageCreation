@@ -42,6 +42,7 @@ class VarManager:
 		self.vars = [[]]
 		self.count = 0
 		self.scope = 0
+		self.varsNextScope = []
 
 	def __str__(self):
 		"""
@@ -120,6 +121,10 @@ class VarManager:
 		Create a new scope of variables. Will copy the previous scope to this new one.
 		"""
 		oldScope = self.vars[self.scope].copy()
+
+		oldScope += self.varsNextScope
+		self.varsNextScope = []
+
 		self.scope += 1
 		self.vars.insert(self.scope, oldScope)
 
@@ -130,6 +135,9 @@ class VarManager:
 		if self.scope >= 1:
 			del self.vars[self.scope]
 			self.scope -= 1
+
+	def addVarToNextScope(self, var: Variable):
+		self.varsNextScope.append(var)
 
 
 # Usages example

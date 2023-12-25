@@ -185,7 +185,11 @@ class Ast(AbstractSyntaxTree):
 
     def scanForLoop(self, tokens: list[Token]) -> tuple[int, ForLoop]:
         print(">> For start <<")
-        var = tokens[0].value
+
+        varId = self.vm.createOrGet(tokens[0].value)
+        var = self.vm.getVarById(varId)
+
+        self.vm.addVarToNextScope(var)
 
         ptrCondition, condition = self.scanCondition(tokens[2:], Symbol.FORSTEP)
         ptrIncr, incr = self.scanBasicInstruction(tokens[ptrCondition + 2:], Symbol.ACOS)

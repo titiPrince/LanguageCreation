@@ -7,17 +7,17 @@ class Instruction(ABC):
         indentation = " " * (4 * offset)
         inner = "    "
         newline = "\n" + indentation
-        output = "{" + newline + inner + f'"type": {self.__class__.__name__}' + newline
+        output = "{" + newline + inner + f'"type": "{self.__class__.__name__}",' + newline
 
         for key, value in self.__dict__.items():
-            svalue = value
+            svalue = f'"{value}"'
             if isinstance(value, Instruction):
                 svalue = f"{value.toString(offset + 1)}"
 
             elif isinstance(value, list):
                 svalue = f"[{newline+inner*2}{f',{newline+inner*2}'.join([i.toString(offset+2)for i in value])}{newline+inner}]"
 
-            output += inner + f'"{key}": {svalue}' + newline
+            output += inner + f'"{key}": {svalue},' + newline
 
         output += "}"
 
@@ -197,7 +197,7 @@ class VarAssignation(Instruction):
 
 class ForLoop(Instruction):
     def __init__(self,
-                 var: str,
+                 var: Variable,
                  condition: Comparison,
                  incr: LiteralNumber | VarReading | BinaryOperation | VarAssignation = None,
                  block: Block = None):
@@ -211,12 +211,12 @@ class ForLoop(Instruction):
             _incr = f"{self.incr.transpile()}"
 
         elif isinstance(self.incr, LiteralNumber):
-            _incr = f"{self.var}={self.var}+({self.incr.transpile()})"
+            _incr = f"{self.var.short}={self.var.short}+({self.incr.transpile()})"
 
         else:
-            _incr = f"{self.var}={self.incr.transpile()}"
+            _incr = f"{self.var.short}={self.incr.transpile()}"
 
-        return (f"for(int {self.var}=0;{self.condition.transpile()};{_incr})"
+        return (f"for(int {self.var.short}=0;{self.condition.transpile()};{_incr})"
                 f"{{{self.block.transpile()}}}")
 
 
