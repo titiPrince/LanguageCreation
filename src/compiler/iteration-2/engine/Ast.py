@@ -27,7 +27,17 @@ class Ast(AbstractSyntaxTree):
             # Token detection
             match token.type:
                 case TokenType.ID:
-                    currentParam = VarReading(token.value)
+                    if self.vm.exists(token.value):
+                        varId = self.vm.getIdByName(token.value)
+                        var = self.vm.getVarById(varId)
+
+                        currentParam = VarReading(var)
+
+                    else:
+                        varId = self.vm.create(token.value)
+                        var = self.vm.getVarById(varId)
+
+                        currentParam = VarDeclaration(var)
 
                 case TokenType.OP:
                     if token.value == Symbol.ASSIGN:
@@ -47,22 +57,23 @@ class Ast(AbstractSyntaxTree):
                 lastParam = currentParam
 
             elif isinstance(currentParam, VarAssignation):
-                if self.vm.exists(lastParam.name):
-                    varName = lastParam.name
+                if isinstance(lastParam, VarDeclaration): continue
 
-                else:
-                    varName = self.vm.generateFromName(lastParam.name)
-                    currentParam = VarDeclaration()
-
-                currentParam.setName(varName)
+                currentParam.setVar(lastParam.variable)
                 lastParam = currentParam
 
-            elif isinstance(currentParam, BinaryOperation):
+            elif isinstance(currentParam, (BinaryOperation, StringConcat)):
                 if isinstance(lastParam, (VarAssignation, VarDeclaration)):
+                    if isinstance(lastParam.value, (LiteralString, StringConcat)):
+                        currentParam = StringConcat()
+
                     currentParam.setA(lastParam.value)
                     lastParam.setValue(currentParam)
 
                 else:
+                    if isinstance(lastParam, (LiteralString, StringConcat)):
+                        currentParam = StringConcat()
+
                     currentParam.setA(lastParam)
                     lastParam = currentParam
 
@@ -71,7 +82,16 @@ class Ast(AbstractSyntaxTree):
                     if lastParam.value is None:
                         lastParam.setValue(currentParam)
 
-                    elif isinstance(lastParam.value, BinaryOperation):
+                        if isinstance(currentParam, LiteralNumber):
+                            lastParam.var.setType(VarType.INTEGER)
+
+                        elif isinstance(currentParam, LiteralString):
+                            lastParam.var.setType(VarType.STRING)
+
+                        else:
+                            lastParam.var.setType(currentParam.variable.type)
+
+                    elif isinstance(lastParam.value, (BinaryOperation, StringConcat)):
                         lastParam.value.setB(currentParam)
                 else:
                     lastParam.setB(currentParam)
@@ -95,7 +115,10 @@ class Ast(AbstractSyntaxTree):
                         currentParam = BoolComparison(token.value)
 
                     else:
-                        currentParam = VarReading(token.value)
+                        varId = self.vm.createOrGet(token.value)
+                        var = self.vm.getVarById(varId)
+
+                        currentParam = VarReading(var)
 
                 case TokenType.OP:
                     if token.value in Symbol.CALCS:
@@ -187,7 +210,10 @@ class Ast(AbstractSyntaxTree):
                 case TokenType.ID:
                     # Add here in the future, condition to verify if there is a function call
 
-                    currentParam = VarReading(token.value)
+                    varId = self.vm.createOrGet(token.value)
+                    var = self.vm.getVarById(varId)
+
+                    currentParam = VarReading(var)
 
                 case TokenType.NUM:
                     currentParam = LiteralNumber(token.value)

@@ -15,7 +15,7 @@ class Variable:
 
 		return f"{self.name} -> {self.short}:{_type}"
 
-	def setType(self, _type: int | None):
+	def setType(self, _type: int):
 		self.type = _type
 
 

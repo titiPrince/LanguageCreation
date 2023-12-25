@@ -45,11 +45,11 @@ class LiteralString(Instruction):
 
 
 class VarReading(Instruction):
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self, variable: Variable):
+        self.variable = variable
 
     def transpile(self) -> str:
-        return self.name
+        return self.variable.short
 
 
 class BinaryOperation(Instruction):
@@ -179,20 +179,20 @@ class IfStatement(Instruction):
 
 
 class VarAssignation(Instruction):
-    def __init__(self, name: str | None = None, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
-        self.name = name
+    def __init__(self, var: Variable | None = None, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat = None):
+        self.var = var
         self.value = value
 
-    def setName(self, name: str):
-        self.name = name
+    def setVar(self, var: Variable):
+        self.var = var
 
     def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value
 
     def transpile(self) -> str:
         if isinstance(self.value, (LiteralString, StringConcat)):
-            return f"SS1(&{self.name},{self.value.transpile()});"
-        return f"{self.name}={self.value.transpile()};"
+            return f"SS1(&{self.var.short},{self.value.transpile()});"
+        return f"{self.var.short}={self.value.transpile()};"
 
 
 class ForLoop(Instruction):
@@ -221,21 +221,21 @@ class ForLoop(Instruction):
 
 
 class VarDeclaration(Instruction):
-    def __init__(self, name: str = None, value: LiteralNumber | LiteralString | StringConcat | VarReading | BinaryOperation = None):
-        self.name = name
+    def __init__(self, var: Variable | None = None, value: LiteralNumber | LiteralString | StringConcat | VarReading | BinaryOperation = None):
+        self.var = var
         self.value = value
 
-    def setName(self, name: str):
-        self.name = name
+    def setVar(self, var: Variable):
+        self.var = var
 
     def setValue(self, value: LiteralNumber | LiteralString | VarReading | BinaryOperation | StringConcat):
         self.value = value
 
     def transpile(self) -> str:
         if isinstance(self.value, (LiteralString, StringConcat)):
-            return f"char* {self.name}={self.value.transpile()};"
+            return f"char* {self.var.short}={self.value.transpile()};"
 
-        return f"int {self.name}={self.value.transpile()};"
+        return f"int {self.var.short}={self.value.transpile()};"
 
 
 class NativeFunctionCall(Instruction):
