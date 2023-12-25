@@ -105,6 +105,21 @@ class Comparison(Instruction):
         self.b = b
 
     def transpile(self) -> str:
+        aIsVarString = (self.a.variable.type == VarType.STRING) if isinstance(self.a, VarReading) else False
+        bIsVarString = (self.b.variable.type == VarType.STRING) if isinstance(self.b, VarReading) else False
+
+        aIsString = isinstance(self.a, LiteralString) or aIsVarString
+        bIsString = isinstance(self.b, LiteralString) or bIsVarString
+
+        if aIsString or bIsString:
+            params = f"{self.a.variable.short if aIsVarString else self.a.transpile()},{self.b.variable.short if bIsVarString else self.b.transpile()}"
+
+            if self.comparator == Symbol.EQUAL:
+                return f"!strcmp({params})"
+
+            elif self.comparator == Symbol.NEQUAL:
+                return f"strcmp({params})"
+
         return f"{self.a.transpile()}{self.comparator}{self.b.transpile()}"
 
 
