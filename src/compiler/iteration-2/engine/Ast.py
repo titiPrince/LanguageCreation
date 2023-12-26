@@ -98,16 +98,13 @@ class Ast(AbstractSyntaxTree):
 
 
     def scanCondition(self, tokens: list[Token], end: str = Symbol.ACOS) -> tuple[int, Comparison]:
-        print(">> Condition start <<")
         lastParam = None
         currentParam = None
 
         for i, token in enumerate(tokens):
             if token.value == end:
-                print(">> Condition end <<", i)
                 return i + 1, lastParam
 
-            print(token)
             # Token detection
             match token.type:
                 case TokenType.ID:
@@ -151,11 +148,9 @@ class Ast(AbstractSyntaxTree):
 
 
     def scanIfStatement(self, tokens: list[Token]) -> tuple[int, IfStatement]:
-        print(">> If start <<")
         # Main
         ptrCondition, condition = self.scanCondition(tokens)
         ptrBlock, block = self.scanBlock(tokens[ptrCondition:])
-        print(f"ptrBlock: {ptrBlock}")
 
         statement = IfStatement(condition, block)
 
@@ -174,7 +169,6 @@ class Ast(AbstractSyntaxTree):
             statement.addElifBranch(ElseIfStatement(elseIfCondition, elseIfBlock))
 
             token = tokens[pointer]
-            print("ICI NEXT", token)
 
         # Else
         if token.value == Symbol.ELSE:
@@ -184,13 +178,10 @@ class Ast(AbstractSyntaxTree):
 
             pointer += ptrElseBlock + 2
 
-        print(">> If end <<", pointer)
         return pointer, statement
 
 
     def scanForLoop(self, tokens: list[Token]) -> tuple[int, ForLoop]:
-        print(">> For start <<")
-
         varId = self.vm.createOrGet(tokens[0].value)
         var = self.vm.getVarById(varId)
 
@@ -202,19 +193,16 @@ class Ast(AbstractSyntaxTree):
 
         statement = ForLoop(var, condition, incr, block)
 
-        print(">> For end <<", ptrBlock)
         return ptrCondition + 2 + ptrIncr + ptrBlock, statement
 
 
     def scanFunctionParameters(self, tokens: list[Token]) -> tuple[
         int, list[LiteralNumber | LiteralString | VarReading | BinaryOperation]]:
-        print(">> Function parameters start <<")
         parameters = []
         lastParam = None
         currentParam = None
 
         for i, token in enumerate(tokens):
-            print(token)
             # Token detection
             match token.type:
                 case TokenType.ID:
@@ -244,7 +232,6 @@ class Ast(AbstractSyntaxTree):
                 case TokenType.BOX:
                     if token.value == Symbol.PARE:
                         parameters.append(lastParam)
-                        print(">> Function parameters end <<", i + 2)
                         return i + 2, parameters
 
                 case TokenType.SEP:
@@ -255,7 +242,6 @@ class Ast(AbstractSyntaxTree):
                 lastParam = currentParam
 
             elif currentParam is None:
-                print("lastParam:", lastParam)
                 parameters.append(lastParam)
                 lastParam = None
 
@@ -268,8 +254,6 @@ class Ast(AbstractSyntaxTree):
 
 
     def scanBlock(self, tokens: list[Token]) -> tuple[int, Block]:
-        print(">> Block start <<")
-
         self.vm.startScope()
 
         block = Block()
@@ -278,10 +262,7 @@ class Ast(AbstractSyntaxTree):
 
         for i, token in enumerate(tokens):
             if skip > i:
-                print("SKIP", token)
                 continue
-
-            print(token)
 
             if token.value == Symbol.IF:
                 skip, instruction = self.scanIfStatement(tokens[i + 1:])
@@ -296,18 +277,13 @@ class Ast(AbstractSyntaxTree):
                 instruction = FunctionPrint(parameters)
                 skip += 2
 
-                print("ICCCCCIIIIIIIIIII:", tokens[skip], "SKKIP:", skip)
-
             elif token.value == Symbol.ACOE:
-                print(">> Block end <<", i)
-
                 self.vm.endScope()
 
                 return i + 1, block
 
             else:
                 skip, instruction = self.scanBasicInstruction(tokens[i:])
-                print(f"Start: {i}, Skip: {skip}, End: {i + skip}\n")
 
             skip += i
             block.add(instruction)
