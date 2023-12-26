@@ -148,6 +148,8 @@ class Ast(AbstractSyntaxTree):
 
 
     def scanIfStatement(self, tokens: list[Token]) -> tuple[int, IfStatement]:
+        countToken = len(tokens)
+
         # Main
         ptrCondition, condition = self.scanCondition(tokens)
         ptrBlock, block = self.scanBlock(tokens[ptrCondition:])
@@ -155,35 +157,48 @@ class Ast(AbstractSyntaxTree):
         statement = IfStatement(condition, block)
 
         pointer = ptrCondition + ptrBlock
-        token = tokens[pointer]
 
-        # Else if
-        while token.value == Symbol.ELSEIF:
-            ptrElseIfCondition, elseIfCondition = self.scanCondition(tokens[pointer + 1:])
-
-            pointer += ptrElseIfCondition + 1
-            ptrElseIfBlock, elseIfBlock = self.scanBlock(tokens[pointer:])
-
-            pointer += ptrElseIfBlock
-
-            statement.addElifBranch(ElseIfStatement(elseIfCondition, elseIfBlock))
-
+        if pointer < countToken:
             token = tokens[pointer]
 
-        # Else
-        if token.value == Symbol.ELSE:
-            ptrElseBlock, elseBlock = self.scanBlock(tokens[pointer + 2:])
+            # Else if
+            while token.value == Symbol.ELSEIF:
+                ptrElseIfCondition, elseIfCondition = self.scanCondition(tokens[pointer + 1:])
 
-            statement.elseBranch = ElseStatement(elseBlock)
+                pointer += ptrElseIfCondition + 1
+                ptrElseIfBlock, elseIfBlock = self.scanBlock(tokens[pointer:])
 
-            pointer += ptrElseBlock + 2
+                pointer += ptrElseIfBlock
+
+                statement.addElifBranch(ElseIfStatement(elseIfCondition, elseIfBlock))
+
+                if pointer > countToken:
+                    return pointer, statement
+
+                token = tokens[pointer]
+
+            # Else
+            if token.value == Symbol.ELSE:
+                ptrElseBlock, elseBlock = self.scanBlock(tokens[pointer + 2:])
+
+                statement.elseBranch = ElseStatement(elseBlock)
+
+                pointer += ptrElseBlock + 2
 
         return pointer, statement
 
 
     def scanForLoop(self, tokens: list[Token]) -> tuple[int, ForLoop]:
-        varId = self.vm.createOrGet(tokens[0].value)
-        var = self.vm.getVarById(varId)
+        varName = tokens[0].value
+
+        if self.vm.exists(varName):
+            varId = self.vm.getIdByName(varName)
+            var = self.vm.getVarById(varId)
+            var = VarReading(var)
+
+        else:
+            varId = self.vm.create(varName)
+            var = self.vm.getVarById(varId)
 
         self.vm.addVarToNextScope(var)
 

@@ -193,7 +193,8 @@ class IfStatement(Instruction):
 
     def transpile(self) -> str:
         elifs = "".join([b.transpile() for b in self.elifBranch]) if self.elifBranch else ""
-        return f"if({self.condition.transpile()}){{{self.block.transpile()}}}{elifs}{self.elseBranch.transpile()}"
+        _else = self.elseBranch.transpile() if not self.elseBranch is None else ''
+        return f"if({self.condition.transpile()}){{{self.block.transpile()}}}{elifs}{_else}"
 
 
 class VarAssignation(Instruction):
@@ -215,7 +216,7 @@ class VarAssignation(Instruction):
 
 class ForLoop(Instruction):
     def __init__(self,
-                 var: Variable,
+                 var: Variable | VarReading,
                  condition: Comparison,
                  incr: LiteralNumber | VarReading | BinaryOperation | VarAssignation = None,
                  block: Block = None):
@@ -225,16 +226,22 @@ class ForLoop(Instruction):
         self.block = block
 
     def transpile(self) -> str:
+        if isinstance(self.var, Variable):
+            _var = f"int {self.var.short}=0"
+
+        else:
+            _var = self.var.variable.short
+
         if isinstance(self.incr, VarAssignation):
             _incr = f"{self.incr.transpile()}"
 
         elif isinstance(self.incr, LiteralNumber):
-            _incr = f"{self.var.short}={self.var.short}+({self.incr.transpile()})"
+            _incr = f"{_var}={_var}+({self.incr.transpile()})"
 
         else:
-            _incr = f"{self.var.short}={self.incr.transpile()}"
+            _incr = f"{_var}={self.incr.transpile()}"
 
-        return (f"for(int {self.var.short}=0;{self.condition.transpile()};{_incr})"
+        return (f"for({_var};{self.condition.transpile()};{_incr})"
                 f"{{{self.block.transpile()}}}")
 
 

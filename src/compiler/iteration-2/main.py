@@ -64,12 +64,13 @@ if __name__ == '__main__':
         start_compiler_time = time_ns()
         os.system("gcc " + source + ".c -o " + destination)
         compiler_time = time_ns() - start_compiler_time
-        os.remove(source + ".c")
+
 
         if DEBUG:
             print("\n################\n#### RESULT ####\n################")
 
         else:
+            os.remove(source + ".c")
             os.system("clear")
 
         start_execution_time = time_ns()
