@@ -257,7 +257,7 @@ class VarDeclaration(Instruction):
 
 
 class NativeFunctionCall(Instruction):
-    def __init__(self, name: str, parameters: list[LiteralNumber | VarReading | BinaryOperation]):
+    def __init__(self, name: str, parameters: list[LiteralNumber | LiteralString | VarReading | StringConcat | BinaryOperation]):
         self.name = name
         self.parameters = parameters
 
@@ -271,16 +271,36 @@ class NativeFunctionCall(Instruction):
 
 
 class FunctionPrint(NativeFunctionCall):
-    def __init__(self, parameters: list[LiteralNumber | LiteralString | VarReading | BinaryOperation]):
+    def __init__(self, parameters: list[LiteralNumber | LiteralString | VarReading | StringConcat | BinaryOperation]):
         super().__init__("printf", parameters)
 
     def transpile(self) -> str:
         sparams = ""
+        formats = []
 
         for param in self.parameters:
             sparams += param.transpile() + ","
 
-        return f'{self.name}("%i\\n",{sparams[0:-1]});'
+            if isinstance(param, (LiteralString, StringConcat)):
+                formats.append("%s")
+
+            elif isinstance(param, VarReading):
+                match param.variable.type:
+                    case VarType.STRING:
+                        formats.append("%s")
+
+                    case VarType.INTEGER:
+                        formats.append("%i")
+
+                    case VarType.BOOLEAN:
+                        formats.append("%d")
+
+            elif isinstance(param, (LiteralNumber, BinaryOperation)):
+                formats.append("%i")
+
+        sformat = " ".join(formats)
+
+        return f'{self.name}("{sformat}\\n",{sparams[0:-1]});'
 
 
 class AbstractSyntaxTree:
@@ -301,7 +321,6 @@ class AbstractSyntaxTree:
         self.instructions = list(block.instructions)
 
     def addInstruction(self, *instructions: Instruction):
-        print("INSTRUCTION", instructions)
         self.instructions += instructions
 
     def transpile(self) -> str:
@@ -318,122 +337,3 @@ class AbstractSyntaxTree:
 
         return output + "}"
 
-
-if __name__ == '__main__':
-    root = AbstractSyntaxTree(
-        VarDeclaration("cha1ne", LiteralString("Ceci est une chaine de caractere")),
-        VarDeclaration("autrechaine",
-                       StringConcat(
-                           LiteralString("un exemple"),
-                           StringConcat(
-                               VarReading("cha1ne"),
-                               StringConcat(
-                                   LiteralString("test"),
-                                   LiteralString("waw")
-                               )
-                           )
-                       )),
-        VarDeclaration("a", LiteralString("a")),
-        VarDeclaration("b",
-                       StringConcat(
-                           LiteralString("b"),
-                           StringConcat(
-                               VarReading("a"),
-                               LiteralString("test")
-                           )
-                       )),
-        VarDeclaration("c",
-                       BinaryOperation("+",
-                                       LiteralNumber(1),
-                                       BinaryOperation("*",
-                                                       LiteralNumber(2),
-                                                       LiteralNumber(5)
-                                                       )
-                                       )
-                       ),
-        IfStatement(
-            Comparison("==",
-                       VarReading("b"),
-                       LiteralString("ba")
-                       ),
-            Block(
-                VarAssignation("a",
-                               LiteralString("ab")
-                               )
-            ), None,
-            ElseStatement(
-                Block(
-                    VarAssignation("a",
-                                   LiteralString("aba")
-                                   )
-                )
-            )
-        ),
-        IfStatement(
-            Comparison("!=",
-                       LiteralNumber(0),
-                       LiteralNumber(0)
-                       ),
-            Block(
-                FunctionPrint(
-                    LiteralString("C'est 0")
-                )
-            ),
-            [
-                ElseIfStatement(
-                    Comparison(
-                        "==",
-                        VarReading("a"),
-                        Comparison(
-                            "and",
-                            LiteralString("ba"),
-                            Comparison(
-                                "!=",
-                                LiteralNumber(1),
-                                Comparison(
-                                    "or",
-                                    LiteralNumber(1),
-                                    Comparison(
-                                        ">",
-                                        LiteralNumber(1),
-                                        LiteralNumber(5)
-                                    )
-                                )
-                            )
-                        )
-                    ),
-                    Block(
-                        FunctionPrint(LiteralString("C'est 1"))
-                    )
-                )
-            ],
-            ElseStatement(
-                Block(
-                    FunctionPrint(LiteralString("C'est rien"))
-                )
-            )
-        ),
-        VarDeclaration("count", LiteralNumber(0)),
-        ForLoop(
-            "i",
-            Comparison(
-                "<",
-                VarReading("i"),
-                LiteralNumber(50)
-            ),
-            LiteralNumber(1),
-            Block(
-                FunctionPrint(VarReading("count")),
-                VarAssignation(
-                    "count",
-                    BinaryOperation(
-                        "+",
-                        VarReading("count"),
-                        LiteralNumber(1)
-                    )
-                )
-            )
-        )
-    )
-
-    print(root.transpile())

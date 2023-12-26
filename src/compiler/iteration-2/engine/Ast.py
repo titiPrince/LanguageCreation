@@ -214,6 +214,7 @@ class Ast(AbstractSyntaxTree):
         currentParam = None
 
         for i, token in enumerate(tokens):
+            print(token)
             # Token detection
             match token.type:
                 case TokenType.ID:
@@ -243,7 +244,7 @@ class Ast(AbstractSyntaxTree):
                 case TokenType.BOX:
                     if token.value == Symbol.PARE:
                         parameters.append(lastParam)
-                        print(">> Function parameters end <<", i)
+                        print(">> Function parameters end <<", i + 2)
                         return i + 2, parameters
 
                 case TokenType.SEP:
@@ -254,6 +255,7 @@ class Ast(AbstractSyntaxTree):
                 lastParam = currentParam
 
             elif currentParam is None:
+                print("lastParam:", lastParam)
                 parameters.append(lastParam)
                 lastParam = None
 
@@ -276,6 +278,7 @@ class Ast(AbstractSyntaxTree):
 
         for i, token in enumerate(tokens):
             if skip > i:
+                print("SKIP", token)
                 continue
 
             print(token)
@@ -292,6 +295,8 @@ class Ast(AbstractSyntaxTree):
                 skip, parameters = self.scanFunctionParameters(tokens[i + 2:])  # +2 to skip the (
                 instruction = FunctionPrint(parameters)
                 skip += 2
+
+                print("ICCCCCIIIIIIIIIII:", tokens[skip], "SKKIP:", skip)
 
             elif token.value == Symbol.ACOE:
                 print(">> Block end <<", i)

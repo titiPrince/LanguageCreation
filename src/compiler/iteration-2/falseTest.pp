@@ -6,7 +6,9 @@ b = "b" + a + "test";
 
 c = 1 + 2 * 5;
 
-si b == "ba" {
+print(a, b, c);
+
+si b == "batest" {
   a = "ab";
 }
 sinon
