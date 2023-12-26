@@ -1,12 +1,21 @@
 class VarType:
 	INTEGER = 0
 	STRING = 1
+	BOOLEAN = 2
 
 
 class Variable:
 	def __init__(self, _name: str, _shortname: str, _type: int | None):
 		self.name = _name
 		self.short = _shortname
+		self.type = _type
+
+	def __str__(self):
+		_type = "null" if self.type is None else ("int", "str", "bool")[self.type]
+
+		return f"{self.name} -> {self.short}:{_type}"
+
+	def setType(self, _type: int):
 		self.type = _type
 
 
@@ -33,6 +42,7 @@ class VarManager:
 		self.vars = [[]]
 		self.count = 0
 		self.scope = 0
+		self.varsNextScope = []
 
 	def __str__(self):
 		"""
@@ -111,6 +121,10 @@ class VarManager:
 		Create a new scope of variables. Will copy the previous scope to this new one.
 		"""
 		oldScope = self.vars[self.scope].copy()
+
+		oldScope += self.varsNextScope
+		self.varsNextScope = []
+
 		self.scope += 1
 		self.vars.insert(self.scope, oldScope)
 
@@ -121,6 +135,9 @@ class VarManager:
 		if self.scope >= 1:
 			del self.vars[self.scope]
 			self.scope -= 1
+
+	def addVarToNextScope(self, var: Variable):
+		self.varsNextScope.append(var)
 
 
 # Usages example
