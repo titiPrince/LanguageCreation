@@ -83,6 +83,7 @@ class VarManager:
 		return -1
 
 	def getVarById(self, id: int) -> Variable | None:
+		print(self.count)
 		return self.vars[self.scope][id] if id < self.count else None
 
 	def createOrGet(self, name: str, _type: int = None) -> int:
@@ -122,7 +123,8 @@ class VarManager:
 		"""
 		oldScope = self.vars[self.scope].copy()
 
-		oldScope += self.varsNextScope
+		oldScope += self.varsNextScope.copy()
+		self.count += len(self.varsNextScope)
 		self.varsNextScope = []
 
 		self.scope += 1

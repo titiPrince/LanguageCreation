@@ -39,8 +39,9 @@ class Symbol:
     ADD = "+"
     SUB = "-"
     DIV = "/"
-    OPERATIONS = "+-*/=><!"
-    CALCS = "+-*/"
+    MOD = "%"
+    OPERATIONS = "+-*/%=><!"
+    CALCS = "+-*/%"
 
     QUOT = '"'
     PARS = "("
@@ -66,7 +67,7 @@ class Symbol:
 
 class Symbols:
     CONDITIONS = (Symbol.EQUAL, Symbol.NEQUAL, Symbol.GREATER, Symbol.GREQUAL, Symbol.LOWER, Symbol.LOEQUAL)
-    CALCULATIONS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV)
-    OPERATORS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV, Symbol.ASSIGN, Symbol.GREATER, Symbol.LOWER)
+    CALCULATIONS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV, Symbol.MOD)
+    OPERATORS = (Symbol.ADD, Symbol.MUL, Symbol.SUB, Symbol.DIV, Symbol.MOD, Symbol.ASSIGN, Symbol.GREATER, Symbol.LOWER)
     GATES = (Symbol.AND, Symbol.OR)
     ENDS = (Symbol.SEP, Symbol.EOL)

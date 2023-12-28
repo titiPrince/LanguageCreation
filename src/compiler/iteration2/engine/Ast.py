@@ -200,7 +200,7 @@ class Ast(AbstractSyntaxTree):
             varId = self.vm.create(varName)
             var = self.vm.getVarById(varId)
 
-        self.vm.addVarToNextScope(var)
+        # self.vm.addVarToNextScope(var)
 
         ptrCondition, condition = self.scanCondition(tokens[2:], Symbol.FORSTEP)
         ptrIncr, incr = self.scanBasicInstruction(tokens[ptrCondition + 2:], Symbol.ACOS)
