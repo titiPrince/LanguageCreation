@@ -1,7 +1,6 @@
 from subprocess import call
 
 
-compiler_path = "../main.py"
 
 
 

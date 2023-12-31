@@ -1,9 +1,12 @@
 from engine.tester import *
 
-class FunctionalTest(Unit):
-    def __init__(self):
-        super().__init__("", "")
+variables = ScriptUnit(
+    "Variables",
+    'a=5;print(a);b=a*5;print(b);c=b*5;print(c);',
+    UnitResult()
+)
 
 
 if __name__ == '__main__':
-    pass
+    print("Tests started!")
+    print(variables.test())

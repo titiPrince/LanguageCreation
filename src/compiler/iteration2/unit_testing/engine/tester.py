@@ -1,5 +1,5 @@
-import importlib.util, sys
-from src.compiler.iteration2.main import getOutputFromScript, getOutputFromFile
+from src.compiler.iteration2.main import getOutputFromScript
+from src.compiler.iteration2.main import logger
 
 
 class UnitResult:
@@ -53,14 +53,15 @@ class UnitResult:
 
 
 class ScriptUnit:
-    def __init__(self, script: str, result: UnitResult):
+    def __init__(self, name: str, script: str, result: UnitResult):
+        self._name = name
         self._script = script
         self._result = result
 
-    def test(self) -> list[bool]:
+    def test(self) -> tuple[bool, list[bool]]:
         output = getOutputFromScript(self._script)
 
-        return [
+        parts = [
             output['tkn'] == self._result.lexer,
             output['err'] == self._result.parser,
             output['ast'] == self._result.ast,
@@ -68,16 +69,33 @@ class ScriptUnit:
             output['exe'] == self._result.execution
         ]
 
+        unit = all(parts)
+
+        return unit, parts
+
 
 class FileUnit(ScriptUnit):
-    def __init__(self, file_path: str, result: UnitResult):
+    def __init__(self, name: str, file_path: str, result: UnitResult):
         file = open(file_path, 'r')
         script = file.read()
         file.close()
 
-        super().__init__(script, result)
+        super().__init__(name, script, result)
 
 
 class UnitsTester:
-    def __init__(self, compiler_path: str):
-        pass
+    def __init__(self, *units: ScriptUnit):
+        self._units: list[ScriptUnit] = [*units]
+
+    def addUnit(self, unit: ScriptUnit):
+        self._units.append(unit)
+
+    def test(self):
+        for unit in self._units:
+            succeed, r_parts = unit.test()
+
+            if succeed:
+                logger.log("UNIT-TESTER", f"Unit {unit._name} passed all the tests.")
+
+            else:
+                logger.error("UNIT-TESTER", f"Unit {unit._name} failed.")

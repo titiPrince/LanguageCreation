@@ -1,12 +1,16 @@
 import sys, os
 from time import time_ns
 
-from engine.Lexer import *
-# from engine import Parser
-from engine.Transpiler import *
-from engine.Ast import Ast
+from src.Logger import Logger
+from src.compiler.iteration2.engine.Lexer import *
+# from src.compiler.iteration2.engine import Parser
+from src.compiler.iteration2.engine.Transpiler import *
+from src.compiler.iteration2.engine.Ast import Ast
+
 
 DEBUG = True
+
+logger = Logger("./logs/main.log", DEBUG)
 
 
 def nanoToMilli(nano: int) -> float:
@@ -14,7 +18,6 @@ def nanoToMilli(nano: int) -> float:
 
 
 def getOutputFromScript(script: str) -> dict:
-    output = {}
 
     tokens = lexer(script)
     # errors = Parser.scan(tokens)
@@ -29,17 +32,17 @@ def getOutputFromScript(script: str) -> dict:
 
     execution = os.popen("gcc " + source + ".c -o " + destination).read()
 
-    output["tkn"] = "\n".join([str(token) for token in tokens])
-    output["err"] = ""
-    output["ast"] = str(ast)
-    output["tsp"] = ast.transpile()
-    output["exe"] = execution
+    return {
+        "tkn": "\n".join([str(token) for token in tokens]),
+        "err": "",
+        "ast": str(ast),
+        "tsp": ast.transpile(),
+        "exe": execution
+    }
 
-    return output
 
-
-start_total_time = time_ns()
 if __name__ == '__main__':
+    start_total_time = time_ns()
     nargs = len(sys.argv)
 
     if sys.argv[1] == '-i':
